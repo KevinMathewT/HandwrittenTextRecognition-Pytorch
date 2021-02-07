@@ -69,7 +69,7 @@ class Rescale(object):
             image = F.pad(image, (0, 0, int((req_h - h) // 2),
                                   int((req_h - h) // 2)), value=239, mode="constant")
 
-        print(image.shape)
+        # print(image.shape)
 
         new_h, new_w = self.output_size
         image = F.interpolate(torch.tensor(image).unsqueeze(0), size=(new_h, new_w)).squeeze(0)
