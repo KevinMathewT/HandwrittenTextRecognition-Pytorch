@@ -42,11 +42,11 @@ import matplotlib.pyplot as plt
 
 def get_train_dataloader(train):
     train_dataset = HandWritingLinesDataset(train, transforms=get_train_transforms())
-    a, b = train_dataset[3]
-    print(a, b)
-    # torchvision.utils.save_image(a, "dataloader.png")
-    plt.imshow(a.permute(1, 2, 0))
-    plt.show()
+    # a, b = train_dataset[3]
+    # print(a, b)
+    # # torchvision.utils.save_image(a, "dataloader.png")
+    # plt.imshow(a.permute(1, 2, 0))
+    # plt.show()
     if config.USE_TPU:
         train_sampler = torch.utils.data.distributed.DistributedSampler(
             train_dataset,
