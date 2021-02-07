@@ -129,7 +129,7 @@ class EditDistanceMeter:
         self.sum += total_score
 
     def get_avg_edit_distance(self, y_pred, y_true):
-        print(y_pred.size(), y_true.size())
+        print(y_pred.size(), len(y_true))
 
     @property
     def avg(self):
