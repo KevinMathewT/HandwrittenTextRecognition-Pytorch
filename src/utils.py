@@ -138,9 +138,9 @@ class EditDistanceMeter:
             pred = y_pred[i].view(config.TIME_STEPS, config.N_CLASSES)
             pred = torch.argmax(pred, 1)
             s = "".join([config.ID2CHAR[id.item()] for id in pred])
-            print(s, y_true[i])
             output_decoded = bestPathDecoding(s)
             distance = editdistance.eval(output_decoded, y_true[i])
+            print(s, y_true[i], distance)
             total_distance += distance
 
         return total_distance
