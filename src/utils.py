@@ -112,6 +112,28 @@ class AccuracyMeter:
         return self.avg_score
 
 
+class EditDistanceMeter:
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.score = 0
+        self.count = 0
+        self.sum = 0
+
+    def update(self, y_pred, y_true, batch_size=1):
+        self.batch_size = batch_size
+        self.count += self.batch_size
+        self.score = get_accuracy(y_pred, y_true)
+        total_score = self.score * self.batch_size
+        self.sum += total_score
+
+    @property
+    def avg(self):
+        self.avg_score = self.sum/self.count
+        return self.avg_score
+
+
 def freeze_batchnorm_stats(net):
     try:
         for m in net.modules():

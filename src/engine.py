@@ -10,7 +10,7 @@ from ranger_adabelief import RangerAdaBelief
 
 from . import config
 from .models.models import *
-from .utils import AccuracyMeter, AverageLossMeter
+from .utils import EditDistanceMeter, AverageLossMeter
 
 if config.USE_TPU:
     import torch_xla.core.xla_model as xm
@@ -23,7 +23,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
     print_fn = print if not config.USE_TPU else xm.master_print
     t = time.time()
     running_loss = AverageLossMeter()
-    running_accuracy = AccuracyMeter()
+    running_distance = EditDistanceMeter()
     total_steps = len(train_loader)
     pbar = enumerate(train_loader)
     optimizer.zero_grad()
@@ -36,12 +36,13 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
         if (not config.USE_TPU) and config.MIXED_PRECISION_TRAIN:
             with torch.cuda.amp.autocast():
                 image_preds = model(imgs)
+                print(image_preds.size())
                 loss = loss_fn(image_preds, image_labels)
                 running_loss.update(
                     curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
-                running_accuracy.update(
+                running_distance.update(
                     y_pred=image_preds.detach().cpu(),
-                    y_true=image_labels.detach().cpu() if not config.ONE_HOT_LABEL else torch.argmax(image_labels, 1).detach().cpu(),
+                    y_true=image_labels.detach().cpu(),
                     batch_size=curr_batch_size)
 
             scaler.scale(loss).backward()
@@ -73,7 +74,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
 
             running_loss.update(
                 curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
-            running_accuracy.update(
+            running_distance.update(
                 y_pred=image_preds.detach().cpu(),
                 y_true=image_labels.detach().cpu() if not config.ONE_HOT_LABEL else torch.argmax(image_labels, 1).detach().cpu(),
                 batch_size=curr_batch_size)
@@ -84,13 +85,13 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
         if config.USE_TPU:
             loss = xm.mesh_reduce(
                 'train_loss_reduce', running_loss.avg, lambda x: sum(x) / len(x))
-            acc = xm.mesh_reduce(
-                'train_acc_reduce', running_accuracy.avg, lambda x: sum(x) / len(x))
+            edit = xm.mesh_reduce(
+                'train_edit_reduce', running_distance.avg, lambda x: sum(x) / len(x))
         else:
             loss = running_loss.avg
-            acc = running_accuracy.avg
+            edit = running_distance.avg
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Accuracy: {acc:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f}'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f}'
             print_fn(description, flush=True)
 
         # break
