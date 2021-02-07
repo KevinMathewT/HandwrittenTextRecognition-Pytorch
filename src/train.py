@@ -45,12 +45,17 @@ def run_fold(fold):
     gc.collect()
 
     for epoch in range(config.MAX_EPOCHS):
+        print("hello", 1)
         epoch_start = time.time()
 
+        print("hello", 2)
         if config.DO_FREEZE_BATCH_NORM and epoch < config.FREEZE_BN_EPOCHS:
             freeze_batchnorm_stats(net)
 
+        print("hello", 3)
         train_mp_device_loader          = pl.MpDeviceLoader(train_loader, device, fixed_batch_size=True) if config.USE_TPU else train_loader
+        
+        print("hello", 4)
         train_one_epoch(fold, epoch, net, loss_tr, optimizer, train_mp_device_loader, device, scaler=scaler, scheduler=scheduler, schd_batch_update=config.SCHEDULER_BATCH_STEP)
         del train_mp_device_loader
         gc.collect()
