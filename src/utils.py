@@ -13,6 +13,8 @@ from torch.utils.data import DataLoader, Dataset
 from . import config
 from .transforms import *
 
+import editdistance
+
 if config.USE_TPU:
     import torch_xla.core.xla_model as xm
 
@@ -124,12 +126,25 @@ class EditDistanceMeter:
     def update(self, y_pred, y_true, batch_size=1):
         self.batch_size = batch_size
         self.count += self.batch_size
-        self.score = self.get_avg_edit_distance(y_pred, y_true)
-        total_score = self.score * self.batch_size
+        total_score = self.get_avg_edit_distance(y_pred, y_true)
         self.sum += total_score
 
     def get_avg_edit_distance(self, y_pred, y_true):
         print(y_pred.size(), len(y_true))
+
+        total_distance = 0.0
+
+        for i in len(y_pred):
+            pred = y_pred[i].view(config.TIME_STEPS, config.N_CLASSES)
+            pred = torch.argmax(pred, 1)
+            s = "".join([config.ID2CHAR[id.item()] for id in pred])
+            print(s, y_true[i])
+            output_decoded = bestPathDecoding(s)
+            distance = editdistance.eval(output_decoded, y_true[i])
+            total_distance += distance
+
+        return total_distance
+
 
     @property
     def avg(self):
