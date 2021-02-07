@@ -39,8 +39,8 @@ DROP_LAST             = True # [True, False]
 DO_FREEZE_BATCH_NORM  = True # [True, False]
 FREEZE_BN_EPOCHS      = 5
 
-H                     = 90 # [224, 384, 512]
-W                     = 1660 # [224, 384, 512]
+H                     = 32 # [224, 384, 512]
+W                     = 128 # [224, 384, 512]
 C                     = 1
 
 OPTIMIZER             = "RAdam"  # [Adam, AdamW, RAdam, AdaBelief, RangerAdaBelief]
@@ -61,8 +61,7 @@ TRAIN_BATCH_SIZE      = 32
 VALID_BATCH_SIZE      = 32
 ACCUMULATE_ITERATION  = 1
 
-NET                   = "EfficientNetB4" # [SEResNeXt50_32x4d_BH, ResNeXt50_32x4d_BH, ViTBase16_BH, ViTBase16, ViTLarge16
-                                             #  resnext50_32x4d, seresnext50_32x4d, tf_efficientnet_b4_ns, ['vit_base_patch16_224', 'vit_base_patch16_384', 'vit_base_patch32_384', 'vit_base_resnet26d_224', 'vit_base_resnet50d_224', 'vit_huge_patch16_224', 'vit_huge_patch32_384', 'vit_large_patch16_224', 'vit_large_patch16_384', 'vit_large_patch32_384', 'vit_small_patch16_224', 'vit_small_resnet26d_224', 'vit_small_resnet50d_s3_224']
+NET                   = "Image2TextNet" # []
 
 PRETRAINED            = True
 LEARNING_VERBOSE      = True
