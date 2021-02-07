@@ -144,6 +144,7 @@ input/
 src/models/*/
 generated/weights/
 generated/links.txt
+wandb/
 
 *.pem
 tb_logs/
