@@ -86,7 +86,7 @@ def train():
     if not config.USE_TPU:
         if not config.PARALLEL_FOLD_TRAIN:
             for fold in [0]:
-                net = get_net(name=config.NET, pretrained=config.PRETRAINED)
+                net = get_net(name=config.NET)
                 run_fold(fold)
 
         if config.PARALLEL_FOLD_TRAIN:

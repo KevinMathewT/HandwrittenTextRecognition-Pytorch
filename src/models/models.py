@@ -34,7 +34,7 @@ class BinaryHead(nn.Module):
 class SEResNeXt50_32x4d_BH(nn.Module):
     name = "SEResNeXt50_32x4d_BH"
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=config.PRETRAINED):
         super().__init__()
         self.model_arch = "seresnext50_32x4d"
         self.net = nn.Sequential(*list(
@@ -59,7 +59,7 @@ class SEResNeXt50_32x4d_BH(nn.Module):
 class ResNeXt50_32x4d_BH(nn.Module):
     name = "ResNeXt50_32x4d_BH"
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=config.PRETRAINED):
         super().__init__()
         self.model_arch = "resnext50_32x4d"
         self.model = timm.create_model(self.model_arch, pretrained=pretrained)
@@ -89,7 +89,7 @@ class ResNeXt50_32x4d_BH(nn.Module):
 class ViTBase16_BH(nn.Module):
     name = "ViTBase16_BH"
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=config.PRETRAINED):
         super().__init__()
         self.net = timm.create_model(
             "vit_base_patch16_384", pretrained=pretrained)
@@ -111,7 +111,7 @@ class ViTBase16_BH(nn.Module):
 class ViTBase16(nn.Module):
     name = "ViTBase16"
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=config.PRETRAINED):
         super().__init__()
         # self.model_arch = 'ViT-B_16'
         # self.net = VisionTransformer.from_pretrained(
@@ -131,7 +131,7 @@ class ViTBase16(nn.Module):
 class ViTLarge16(nn.Module):
     name = "ViTLarge16"
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=config.PRETRAINED):
         super().__init__()
         # self.model_arch = 'ViT-B_16'
         # self.net = VisionTransformer.from_pretrained(
@@ -151,7 +151,7 @@ class ViTLarge16(nn.Module):
 class EfficientNetB4(nn.Module):
     name = "EfficientNetB4"
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=config.PRETRAINED):
         super().__init__()
         self.model_arch = 'tf_efficientnet_b4_ns'
         self.net = timm.create_model(self.model_arch, pretrained=pretrained)
@@ -166,7 +166,7 @@ class EfficientNetB4(nn.Module):
 class EfficientNetB3(nn.Module):
     name = "EfficientNetB3"
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=config.PRETRAINED):
         super().__init__()
         self.model_arch = 'tf_efficientnet_b3_ns'
         self.net = timm.create_model(self.model_arch, pretrained=pretrained)
@@ -179,7 +179,7 @@ class EfficientNetB3(nn.Module):
 
 
 class GeneralizedCassavaClassifier(nn.Module):
-    def __init__(self, model_arch, n_class=config.N_CLASSES, pretrained=True):
+    def __init__(self, model_arch, n_class=config.N_CLASSES, pretrained=config.PRETRAINED):
         super().__init__()
         self.name = model_arch
         self.model = timm.create_model(model_arch, pretrained=pretrained)
@@ -292,7 +292,7 @@ class Image2TextNet(nn.Module):
         self.TIME_STEPS      = 32
 
         if self.USE_RESNET:
-            self.resnet = torchvision.models.resnet50(pretrained=True)
+            self.resnet = torchvision.models.resnet50(pretrained=config.PRETRAINED)
             self.resnet_input = nn.Conv2d(
                         in_channels=1,
                         out_channels=3,

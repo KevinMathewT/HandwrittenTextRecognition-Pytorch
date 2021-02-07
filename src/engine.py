@@ -153,11 +153,11 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
             scheduler.step()
 
 
-def get_net(name, pretrained=False):
+def get_net(name):
     if name not in nets.keys():
-        net = GeneralizedCassavaClassifier(name, pretrained=pretrained)
+        net = GeneralizedCassavaClassifier(name)
     else:
-        net = nets[name](pretrained=pretrained)
+        net = nets[name]()
 
     if config.USE_TPU:
         net = xmp.MpModelWrapper(net)
