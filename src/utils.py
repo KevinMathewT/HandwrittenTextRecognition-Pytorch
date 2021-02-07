@@ -124,9 +124,12 @@ class EditDistanceMeter:
     def update(self, y_pred, y_true, batch_size=1):
         self.batch_size = batch_size
         self.count += self.batch_size
-        self.score = get_accuracy(y_pred, y_true)
+        self.score = self.get_avg_edit_distance(y_pred, y_true)
         total_score = self.score * self.batch_size
         self.sum += total_score
+
+    def get_avg_edit_distance(self, y_pred, y_true):
+        print(y_pred.size(), y_true.size())
 
     @property
     def avg(self):

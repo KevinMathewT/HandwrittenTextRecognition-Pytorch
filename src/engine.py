@@ -42,7 +42,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
                     curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
                 running_distance.update(
                     y_pred=image_preds.detach().cpu(),
-                    y_true=image_labels.detach().cpu(),
+                    y_true=image_labels,
                     batch_size=curr_batch_size)
 
             scaler.scale(loss).backward()
