@@ -36,8 +36,8 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
         if (not config.USE_TPU) and config.MIXED_PRECISION_TRAIN:
             with torch.cuda.amp.autocast():
                 image_preds = model(imgs)
-                print(image_preds.size())
                 loss = loss_fn(image_preds, image_labels)
+                print(image_preds.size(), loss)
                 running_loss.update(
                     curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
                 running_distance.update(
