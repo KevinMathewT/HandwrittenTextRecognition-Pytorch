@@ -48,6 +48,7 @@ def bestPathDecoding(x):
 def _clean_text(text):
     text = text.replace("&quot;", "\"")
     text = text.replace("&amp;", "&")
+    text = text.replace("\n", "")
     return text
 
 
