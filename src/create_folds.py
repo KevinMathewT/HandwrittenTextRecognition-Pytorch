@@ -27,6 +27,7 @@ def read_file(file):
     return df
 
 if __name__ == "__main__":
+    print(config.TRAIN_1)
     train_1 = read_file(config.TRAIN_1)
     train_1["image_id"] = train_1.apply(
         lambda row: row.path.split("/")[-1].split('.')[0], axis=1)
