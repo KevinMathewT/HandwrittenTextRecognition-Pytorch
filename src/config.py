@@ -26,6 +26,7 @@ LENGTH_BIN_SIZE       = 5
 MIN_LEN_ALLOWED       = 1
 MAX_LEN_ALLOWED       = 70
 THRESHOLD             = 0.5 * 256
+TIME_STEPS            = 32
 
 USE_GPU               = True # [True, False]
 USE_TPU               = False # [True, False]

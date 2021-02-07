@@ -289,7 +289,7 @@ class Image2TextNet(nn.Module):
         self.RNN = Image2TextRecurrentNet()
 
         self.USE_RESNET      = False
-        self.TIME_STEPS      = 32
+        self.TIME_STEPS      = config.TIME_STEPS
 
         if self.USE_RESNET:
             self.resnet = torchvision.models.resnet50(pretrained=config.PRETRAINED)
