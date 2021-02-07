@@ -140,7 +140,7 @@ class EditDistanceMeter:
             s = "".join([config.ID2CHAR[id.item()] for id in pred])
             output_decoded = bestPathDecoding(s)
             distance = editdistance.eval(output_decoded, y_true[i])
-            print(output_decoded, y_true[i], distance)
+            # print(output_decoded, y_true[i], distance)
             total_distance += distance
 
         return total_distance
