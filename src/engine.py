@@ -37,7 +37,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
             with torch.cuda.amp.autocast():
                 image_preds = model(imgs)
                 loss = loss_fn(image_preds, image_labels)
-                print(image_preds.size(), loss)
+                # print(image_preds.size(), loss)
                 running_loss.update(
                     curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
                 running_distance.update(
