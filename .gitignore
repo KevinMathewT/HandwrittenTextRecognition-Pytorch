@@ -138,7 +138,7 @@ dmypy.json
 cython_debug/
 
 .kaggle/
-bash_scripts/
+bash_scipts/
 notebooks/
 input/
 src/models/*/
