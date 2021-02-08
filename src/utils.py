@@ -149,10 +149,11 @@ class EditDistanceMeter:
         return self.avg_score
 
 def get_one_from_batch(y_pred, y_true):
+    i = random.randint(0, len(y_pred) - 1)
     y_pred = y_pred.permute(1, 0, 2)
-    pred = torch.argmax(y_pred[0], 1)
+    pred = torch.argmax(y_pred[i], 1)
     s = "".join([config.ID2CHAR[id.item()] for id in pred])
-    return s, y_true[0]
+    return s, y_true[i]
 
 def freeze_batchnorm_stats(net):
     try:

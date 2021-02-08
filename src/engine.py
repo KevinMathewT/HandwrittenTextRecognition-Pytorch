@@ -22,6 +22,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
     total_steps = len(train_loader)
     pbar = enumerate(train_loader)
     optimizer.zero_grad()
+    preds, trues = [], []
 
     for step, (imgs, image_labels) in pbar:
         imgs, image_labels = imgs.to(device, dtype=torch.float32), image_labels
@@ -74,12 +75,20 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
         loss = running_loss.avg
         edit = running_distance.avg
         pred, true = get_one_from_batch(image_preds, image_labels)
+        preds.append(pred)
+        trues.append(true)
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f} | {pred} | {true}'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f}'
             print(description, flush=True)
 
-        # break
+        break
+
+    c = 0
+    for pred, true in zip(preds, trues):
+        c += 1
+        if c >= 5: break
+        print(f"{pred} | {true}")
     if scheduler is not None and not schd_batch_update:
         scheduler.step()
 
@@ -92,6 +101,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
     running_distance = EditDistanceMeter()
     total_steps = len(valid_loader)
     pbar = enumerate(valid_loader)
+    preds, trues = [], []
 
     for step, (imgs, image_labels) in pbar:
         imgs, image_labels = imgs.to(device, dtype=torch.float32), image_labels
@@ -127,10 +137,19 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
         loss = running_loss.avg
         edit = running_distance.avg
         pred, true = get_one_from_batch(image_preds, image_labels)
+        preds.append(pred)
+        trues.append(true)
+
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Validation Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f} | {pred} | {true}'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Validation Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f}'
             print(description, flush=True)
+
+    c = 0
+    for pred, true in zip(preds, trues):
+        c += 1
+        if c >= 5: break
+        print(f"{pred} | {true}")
 
     if scheduler is not None:
         if schd_loss_update:
