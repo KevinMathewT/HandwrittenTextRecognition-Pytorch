@@ -151,7 +151,9 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
     for pred, true in zip(preds, trues):
         c += 1
         if c >= 5: break
-        print(f"{pred} | {true}")
+        print(f"{pred}")
+        print(f"{true}")
+        print(f"------------------------------------------------------")
 
     if scheduler is not None:
         if schd_loss_update:
