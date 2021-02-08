@@ -313,6 +313,7 @@ class Image2TextNet(nn.Module):
             output = output.permute(2, 0, 1)
 
         output = self.RNN(output)
+        output = output.permute(1, 0, 2)
         print(output.size())
         return output
 
