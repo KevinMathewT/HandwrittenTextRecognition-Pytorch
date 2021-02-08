@@ -68,7 +68,7 @@ NET                   = "Image2TextNet" # []
 
 PRETRAINED            = False
 LEARNING_VERBOSE      = True
-VERBOSE_STEP          = 1
+VERBOSE_STEP          = 25
 
 USE_SUBSET            = False
 SUBSET_SIZE           = TRAIN_BATCH_SIZE * 1
