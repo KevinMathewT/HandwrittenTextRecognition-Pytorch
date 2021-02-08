@@ -73,10 +73,10 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
 
         loss = running_loss.avg
         edit = running_distance.avg
-        s, t = get_one_from_batch(image_preds, image_labels)
+        pred, true = get_one_from_batch(image_preds, image_labels)
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f} | {s} | {t}'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f} | {pred} | {true}'
             print(description, flush=True)
 
         # break
@@ -126,10 +126,10 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
 
         loss = running_loss.avg
         edit = running_distance.avg
-        s, t = get_one_from_batch(image_preds, image_labels)
+        pred, true = get_one_from_batch(image_preds, image_labels)
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Validation Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f} | {s} | {t}'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Validation Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f} | {pred} | {true}'
             print(description, flush=True)
 
     if scheduler is not None:
