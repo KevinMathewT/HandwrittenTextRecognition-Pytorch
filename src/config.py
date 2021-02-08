@@ -65,7 +65,7 @@ ACCUMULATE_ITERATION  = 1
 
 NET                   = "Image2TextNet" # []
 
-PRETRAINED            = True
+PRETRAINED            = False
 LEARNING_VERBOSE      = True
 VERBOSE_STEP          = 1
 
