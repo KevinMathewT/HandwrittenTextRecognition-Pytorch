@@ -4,9 +4,6 @@ import torch.nn as nn
 from . import config
 from .utils import stringToClasses
 
-if config.USE_TPU:
-    import torch_xla.core.xla_model as xm
-
 
 class MyCTCLoss(nn.Module):
     def __init__(self, device):
@@ -58,8 +55,7 @@ class MyCTCLoss(nn.Module):
 
 
 def get_train_criterion(device):
-    print_fn = print if not config.USE_TPU else xm.master_print
-    print_fn(f"Training Criterion:          {config.TRAIN_CRITERION}")
+    print(f"Training Criterion:          {config.TRAIN_CRITERION}")
 
     losses = {
         "CTCLoss": MyCTCLoss(device=device).to(device),
@@ -92,8 +88,7 @@ def get_train_criterion(device):
 
 
 def get_valid_criterion(device):
-    print_fn = print if not config.USE_TPU else xm.master_print
-    print_fn(f"Validation Criterion:        {config.VALID_CRITERION}")
+    print(f"Validation Criterion:        {config.VALID_CRITERION}")
 
     losses = {
         "CTCLoss": MyCTCLoss(device=device).to(device),

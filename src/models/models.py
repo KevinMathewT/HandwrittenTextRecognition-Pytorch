@@ -9,29 +9,26 @@ from collections import OrderedDict
 
 from .. import config
 
-if config.USE_TPU:
-    import torch_xla.core.xla_model as xm
-
 class Image2TextConvNet(nn.Module):
     def __init__(self):
         super().__init__()
         layers = OrderedDict()
 
-        self.CONV_CHANNELS   = [32, 64, 128, 128, 256]
-        self.CONV_KERNEL     = [7, 5, 5, 3, 3, 3]
-        self.CONV_STRIDE     = [1, 1, 1, 1, 1, 1]
-        self.CONV_PADDING    = [3, 2, 2, 1, 1, 1]
-        self.BATCH_NORM      = [1, 1, 1, 1, 1, 1] # 1 means we will have a Batch Normalization Layer
-        self.LEAKY_RELU      = [0, 0, 0, 0, 0, 0]
-        self.DROPOUT         = [0, 0, 0, 0, 0, 0] # 0 means we will not have any Dropout
-        self.MAX_POOLING     = [ 
-                [(2, 2), (2, 2)], 
-                [(2, 2), (2, 2)], 
-                [(1, 2), (1, 2)], 
-                [(1, 2), (1, 2)], 
-                [(1, 2), (1, 2)], 
-                [], 
-            ]
+        self.CONV_CHANNELS    = [32, 64, 128, 128, 256]
+        self.CONV_KERNEL      = [7, 5, 5, 3, 3, 3]
+        self.CONV_STRIDE      = [1, 1, 1, 1, 1, 1]
+        self.CONV_PADDING     = [3, 2, 2, 1, 1, 1]
+        self.BATCH_NORM       = [1, 1, 1, 1, 1, 1] # 1 means we will have a Batch Normalization Layer
+        self.LEAKY_RELU       = [0, 0, 0, 0, 0, 0]
+        self.DROPOUT          = [0, 0, 0, 0, 0, 0] # 0 means we will not have any Dropout
+        self.MAX_POOLING      = [ 
+                                    [(2, 2), (2, 2)], 
+                                    [(2, 2), (2, 2)], 
+                                    [(1, 2), (1, 2)], 
+                                    [(1, 2), (1, 2)], 
+                                    [(1, 2), (1, 2)], 
+                                    [], 
+                                ]
         self.NUM_LAYERS      = len(self.CONV_CHANNELS)
 
         # Convolution --> Batch Normalization --> ReLU / LeakyReLU --> Dropout --> MaxPooling

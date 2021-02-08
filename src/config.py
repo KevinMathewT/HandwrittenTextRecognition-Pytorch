@@ -30,7 +30,6 @@ TIME_STEPS            = 256
 RNN_INPUT_SIZE        = 512
 
 USE_GPU               = True # [True, False]
-USE_TPU               = False # [True, False]
 GPUS                  = 1
 TPUS                  = 8 # Basically TPU Nodes
 PARALLEL_FOLD_TRAIN   = False # [True, False]
@@ -76,10 +75,7 @@ CPU_WORKERS           = 0
 TRAIN_BATCH_SIZE    //= ACCUMULATE_ITERATION
 VALID_BATCH_SIZE    //= ACCUMULATE_ITERATION
 if not PARALLEL_FOLD_TRAIN:
-    if USE_TPU:
-        TRAIN_BATCH_SIZE //= TPUS
-        VALID_BATCH_SIZE //= TPUS
-    elif USE_GPU:
+    if USE_GPU:
         TRAIN_BATCH_SIZE //= GPUS
         VALID_BATCH_SIZE //= GPUS
 

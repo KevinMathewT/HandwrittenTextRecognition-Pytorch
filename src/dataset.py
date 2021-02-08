@@ -10,9 +10,6 @@ from . import config
 from .utils import *
 from .transforms import *
 
-if config.USE_TPU:
-    import torch_xla.core.xla_model as xm
-
 def get_img(path):
     im_bgr = cv2.imread(path)
     im_rgb = im_bgr[:, :, ::-1]
@@ -47,48 +44,22 @@ def get_train_dataloader(train):
     # plt.imshow(a.permute(1, 2, 0))
     # plt.show()
     # torchvision.utils.save_image(a, "dataloader.png")
-    if config.USE_TPU:
-        train_sampler = torch.utils.data.distributed.DistributedSampler(
-            train_dataset,
-            num_replicas=xm.xrt_world_size(), # divide dataset among this many replicas
-            rank=xm.get_ordinal(), # which replica/device/core
-            shuffle=True)
-        return DataLoader(
-            train_dataset,
-            batch_size=config.TRAIN_BATCH_SIZE,
-            sampler=train_sampler,
-            num_workers=config.CPU_WORKERS,
-            drop_last=config.DROP_LAST)
-    else:
-        return DataLoader(
-            train_dataset,
-            batch_size=config.TRAIN_BATCH_SIZE,
-            drop_last=config.DROP_LAST,
-            num_workers=config.CPU_WORKERS,
-            shuffle=True)
+    return DataLoader(
+        train_dataset,
+        batch_size=config.TRAIN_BATCH_SIZE,
+        drop_last=config.DROP_LAST,
+        num_workers=config.CPU_WORKERS,
+        shuffle=True)
 
 
 def get_valid_dataloader(valid):
     valid_dataset = HandWritingLinesDataset(valid, transforms=get_valid_transforms())
-    if config.USE_TPU:
-        valid_sampler = torch.utils.data.distributed.DistributedSampler(
-            valid_dataset,
-            num_replicas=xm.xrt_world_size(),
-            rank=xm.get_ordinal(),
-            shuffle=False)
-        return DataLoader(
-            valid_dataset,
-            batch_size=config.VALID_BATCH_SIZE,
-            sampler=valid_sampler,
-            num_workers=config.CPU_WORKERS,
-            drop_last=config.DROP_LAST)
-    else:
-        return DataLoader(
-            valid_dataset,
-            batch_size=config.VALID_BATCH_SIZE,
-            drop_last=config.DROP_LAST,
-            num_workers=config.CPU_WORKERS,
-            shuffle=False)
+    return DataLoader(
+        valid_dataset,
+        batch_size=config.VALID_BATCH_SIZE,
+        drop_last=config.DROP_LAST,
+        num_workers=config.CPU_WORKERS,
+        shuffle=False)
 
 
 def get_loaders(fold):

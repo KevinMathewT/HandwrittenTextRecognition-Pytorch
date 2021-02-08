@@ -15,9 +15,6 @@ from .transforms import *
 
 import editdistance
 
-if config.USE_TPU:
-    import torch_xla.core.xla_model as xm
-
 
 def get_img(path):
     im_bgr = cv2.imread(path, cv2.IMREAD_COLOR)
@@ -60,18 +57,17 @@ def get_accuracy(predictions, targets, normalize=True):
 
 
 def create_dirs():
-    print_fn = print if not config.USE_TPU else xm.master_print
     try:
         os.mkdir(config.WEIGHTS_PATH)
-        print_fn(f"Created Folder \'{config.WEIGHTS_PATH}\'")
+        print(f"Created Folder \'{config.WEIGHTS_PATH}\'")
     except FileExistsError:
-        print_fn(f"Folder \'{config.WEIGHTS_PATH}\' already exists.")
+        print(f"Folder \'{config.WEIGHTS_PATH}\' already exists.")
     try:
         os.mkdir(os.path.join(config.WEIGHTS_PATH, f'{config.NET}'))
-        print_fn(
+        print(
             f"Created Folder \'{os.path.join(config.WEIGHTS_PATH, f'{config.NET}')}\'")
     except FileExistsError:
-        print_fn(
+        print(
             f"Folder \'{os.path.join(config.WEIGHTS_PATH, f'{config.NET}')}\' already exists.")
 
 
@@ -152,6 +148,11 @@ class EditDistanceMeter:
         self.avg_score = self.sum/self.count
         return self.avg_score
 
+def get_one_from_batch(y_pred, y_true):
+    y_pred = y_pred.permute(1, 0, 2)
+    pred = torch.argmax(y_pred[0], 1)
+    s = "".join([config.ID2CHAR[id.item()] for id in pred])
+    return s, y_true[0]
 
 def freeze_batchnorm_stats(net):
     try:

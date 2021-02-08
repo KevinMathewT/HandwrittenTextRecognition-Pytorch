@@ -112,19 +112,17 @@ class RAdam(Optimizer):
 
 
 def get_optimizer_and_scheduler(net, dataloader):
-    print_fn = print if not config.USE_TPU else xm.master_print
-    # m = xm.xrt_world_size() if config.USE_TPU else 1
     m = 1
-    print_fn(f"World Size:                  {m}")
+    print(f"World Size:                  {m}")
 
     m /= config.WARMUP_FACTOR
-    print_fn(f"Learning Rate Multiplier:    {m}")
+    print(f"Learning Rate Multiplier:    {m}")
 
-    print_fn(f"Start Learning Rate:         {config.LEARNING_RATE * m}")
+    print(f"Start Learning Rate:         {config.LEARNING_RATE * m}")
 
     # Optimizers
 
-    print_fn(f"Optimizer:                   {config.OPTIMIZER}")
+    print(f"Optimizer:                   {config.OPTIMIZER}")
     if config.OPTIMIZER == "Adam":
         optimizer = torch.optim.Adam(
             params=net.parameters(),
@@ -152,7 +150,7 @@ def get_optimizer_and_scheduler(net, dataloader):
 
     # Schedulers
 
-    print_fn(f"Scheduler:                   {config.SCHEDULER}")
+    print(f"Scheduler:                   {config.SCHEDULER}")
     if config.SCHEDULER == "ReduceLROnPlateau":
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer,
@@ -185,7 +183,7 @@ def get_optimizer_and_scheduler(net, dataloader):
     else:
         scheduler = None
 
-    print_fn(f"Gradual Warmup:              {config.SCHEDULER_WARMUP}")
+    print(f"Gradual Warmup:              {config.SCHEDULER_WARMUP}")
     if config.SCHEDULER_WARMUP:
         scheduler = scheduler = GradualWarmupSchedulerV2(
             optimizer, multiplier=config.WARMUP_FACTOR, total_epoch=config.WARMUP_EPOCHS, after_scheduler=scheduler)
