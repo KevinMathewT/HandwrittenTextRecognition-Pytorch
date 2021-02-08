@@ -132,6 +132,7 @@ class EditDistanceMeter:
     def get_avg_edit_distance(self, y_pred, y_true):
         # print(y_pred.size(), len(y_true))
 
+        y_pred = y_pred.permute(1, 0, 2)
         total_distance = 0.0
 
         for i in range(len(y_true)):
