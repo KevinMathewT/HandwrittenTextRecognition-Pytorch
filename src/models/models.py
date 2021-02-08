@@ -255,7 +255,7 @@ class Image2TextRecurrentNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.RNN_INPUT_SIZE  = 256
+        self.RNN_INPUT_SIZE  = config.RNN_INPUT_SIZE
         self.RNN_HIDDEN_SIZE = 256
         self.RNN_LAYERS      = 2
         self.BIDIRECTIONAL   = True
@@ -288,27 +288,25 @@ class Image2TextNet(nn.Module):
         super().__init__()
         self.RNN = Image2TextRecurrentNet()
 
-        self.USE_RESNET      = False
+        self.USE_RESNET      = True
         self.TIME_STEPS      = config.TIME_STEPS
 
         if self.USE_RESNET:
-            self.resnet = torchvision.models.resnet50(pretrained=config.PRETRAINED)
-            self.resnet_input = nn.Conv2d(
-                        in_channels=1,
-                        out_channels=3,
-                        kernel_size=3,
-                        stride=1,
-                        padding=1
-                    )
-            for param in self.resnet.parameters():
-                param.requires_grad = False
-            self.fc1 = nn.Linear(1000, self.TIME_STEPS * self.RNN.RNN_INPUT_SIZE)
+            self.resnet = timm.create_model("resnet18", pretrained=False)
+            self.resnet.fc = nn.Identity()
+            self.resnet.global_pool = nn.Identity()
+            # self.resnet.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            # self.resnet.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            self.resnet.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            self.resnet.layer4[0].downsample[0] = nn.Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
         else:
             self.CNN = Image2TextConvNet()
  
     def forward(self, x):
         if self.USE_RESNET:
-            output = self.fc1(nn.ReLU()(self.resnet(self.resnet_input(x)))).view(self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
+            output = self.resnet(input)
+            output = output.view(output.shape[0], output.shape[1], -1)
+            output = output.permute(2, 0, 1).view(self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
         else:
             output = self.CNN(x)
             output = output.squeeze(3)

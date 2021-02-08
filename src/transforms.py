@@ -72,7 +72,7 @@ class Rescale(object):
         # print(image.shape)
 
         new_h, new_w = self.output_size
-        image = F.interpolate(torch.tensor(image).unsqueeze(0), size=(new_h, new_w)).squeeze(0)
+        image = F.interpolate(image.unsqueeze(0), size=(new_h, new_w)).squeeze(0)
 
         image = image.view(-1, new_h, new_w)
         image = image.permute(1, 2, 0).numpy()
@@ -240,19 +240,28 @@ class NumpyToTensor(object):
 
 # tensor([237.1252, 237.1252, 237.1252], device='cuda:0')
 # tensor([42.7399, 42.7399, 42.7399], device='cuda:0')
-
+# tensor([239.0483, 239.0483, 239.0483], device='cuda:0')
+# tensor([39.9831, 39.9831, 39.9831], device='cuda:0')
 
 def get_train_transforms():
     return Compose([
-        Rescale((config.H, config.W)),
+        Rescale((config.W, config.H)),
         TransposeImage(),
-        # ShiftScaleRotate(p=1.),
-        Rotate(p=1., border_mode=cv2.BORDER_CONSTANT, value=[255., 255., 255.], limit=10.),
-        # Normalize(mean=[237.1252, 237.1252, 237.1252], std=[42.7399, 42.7399, 42.7399], p=1.0),
-        ToGrayscale(),
+        # VerticalFlip(p=1),
+        # HorizontalFlip(p=0.5),
+        # ShiftScaleRotate(p=1., rotate_limit=5.),
+        HueSaturationValue(hue_shift_limit=0.2,
+                           sat_shift_limit=0.2, val_shift_limit=0.2, p=0.5),
+        RandomBrightnessContrast(
+            brightness_limit=(-0.1, 0.1), contrast_limit=(-0.1, 0.1), p=0.5),
+        Rotate(p=0.5, border_mode=cv2.BORDER_CONSTANT, value=[255., 255., 255.], limit=5.),
+        Normalize(mean=[0.485, 0.456, 0.406], std=[
+                  0.229, 0.224, 0.225], max_pixel_value=255.0, p=1.0),
+        Cutout(p=0.5),
+        # ToGrayscale(),
 
-        # GaussianFiltering(channels=1, kernel_size=5, sigma=1),
-        GreyscaleToBlackAndWhite(),
+        # # # GaussianFiltering(channels=1, kernel_size=5, sigma=1),
+        # GreyscaleToBlackAndWhite(),
         ToTensorV2(p=1.0),
     ])
 
@@ -262,10 +271,6 @@ def get_train_transforms():
         HorizontalFlip(p=0.5),
         VerticalFlip(p=0.5),
         ShiftScaleRotate(p=0.5),
-        HueSaturationValue(hue_shift_limit=0.2,
-                           sat_shift_limit=0.2, val_shift_limit=0.2, p=0.5),
-        RandomBrightnessContrast(
-            brightness_limit=(-0.1, 0.1), contrast_limit=(-0.1, 0.1), p=0.5),
         Normalize(mean=[0.485, 0.456, 0.406], std=[
                   0.229, 0.224, 0.225], max_pixel_value=255.0, p=1.0),
         CoarseDropout(p=0.5),
@@ -276,24 +281,11 @@ def get_train_transforms():
 
 def get_valid_transforms():
     return Compose([
-        Resize(config.H, config.W),
+        Rescale((config.W, config.H)),
+        TransposeImage(),
         Normalize(mean=[0.485, 0.456, 0.406], std=[
                   0.229, 0.224, 0.225], max_pixel_value=255.0, p=1.0),
-        ToTensorV2(p=1.0),
-    ], p=1.)
-
-
-def get_inference_transforms():
-    return Compose([
-        RandomResizedCrop(config.H, config.W),
-        Transpose(p=0.5),
-        HorizontalFlip(p=0.5),
-        VerticalFlip(p=0.5),
-        HueSaturationValue(hue_shift_limit=0.2,
-                           sat_shift_limit=0.2, val_shift_limit=0.2, p=0.5),
-        RandomBrightnessContrast(
-            brightness_limit=(-0.1, 0.1), contrast_limit=(-0.1, 0.1), p=0.5),
-        Normalize(mean=[0.485, 0.456, 0.406], std=[
-                  0.229, 0.224, 0.225], max_pixel_value=255.0, p=1.0),
+        ToGrayscale(),
+        GreyscaleToBlackAndWhite(),
         ToTensorV2(p=1.0),
     ], p=1.)

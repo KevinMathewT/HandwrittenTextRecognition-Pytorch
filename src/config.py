@@ -25,8 +25,9 @@ WEIGHTS_PATH          = "./generated/weights/" # For PC and Kaggle
 LENGTH_BIN_SIZE       = 5
 MIN_LEN_ALLOWED       = 1
 MAX_LEN_ALLOWED       = 70
-THRESHOLD             = 0.5 * 256
-TIME_STEPS            = 32
+THRESHOLD             = 0
+TIME_STEPS            = 256
+RNN_INPUT_SIZE        = 512
 
 USE_GPU               = True # [True, False]
 USE_TPU               = False # [True, False]
@@ -40,8 +41,8 @@ DROP_LAST             = True # [True, False]
 DO_FREEZE_BATCH_NORM  = True # [True, False]
 FREEZE_BN_EPOCHS      = 5
 
-H                     = 32 # [224, 384, 512]
-W                     = 128 # [224, 384, 512]
+H                     = 1024 # [32, 384, 512]
+W                     = 64 # [128, 384, 512]
 C                     = 1
 
 OPTIMIZER             = "RAdam"  # [Adam, AdamW, RAdam, AdaBelief, RangerAdaBelief]
