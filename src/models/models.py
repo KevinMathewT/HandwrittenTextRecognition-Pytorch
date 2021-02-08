@@ -304,7 +304,7 @@ class Image2TextNet(nn.Module):
  
     def forward(self, x):
         if self.USE_RESNET:
-            output = self.resnet(input)
+            output = self.resnet(x)
             output = output.view(output.shape[0], output.shape[1], -1)
             output = output.permute(2, 0, 1).view(self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
         else:
