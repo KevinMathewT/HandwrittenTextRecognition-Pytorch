@@ -49,12 +49,12 @@ C                     = 1
 OPTIMIZER             = "RAdam"  # [Adam, AdamW, RAdam, AdaBelief, RangerAdaBelief]
 SCHEDULER             = "CosineAnnealingWarmRestarts" # [ReduceLROnPlateau, CosineAnnealingLR, OneCycleLR, CosineAnnealingWarmRestarts, StepLR]
 SCHEDULER_WARMUP      = True # [True, False]
-WARMUP_EPOCHS         = 1 if SCHEDULER_WARMUP else 0
+WARMUP_EPOCHS         = 3 if SCHEDULER_WARMUP else 0
 WARMUP_FACTOR         = 7 if SCHEDULER_WARMUP else 1
 TRAIN_CRITERION       = "CTCLoss" # [BiTemperedLogisticLoss, LabelSmoothingCrossEntropy, SoftmaxCrossEntropy, FocalCosineLoss, SmoothCrossEntropyLoss, TaylorCrossEntropyLoss, RandomChoice]
 VALID_CRITERION       = "CTCLoss" # [BiTemperedLogisticLoss, SoftmaxCrossEntropy, FocalCosineLoss, SmoothCrossEntropyLoss, TaylorCrossEntropyLoss, RandomChoice]
-LEARNING_RATE         = 1e-4
-MAX_EPOCHS            = 15
+LEARNING_RATE         = 5e-4
+MAX_EPOCHS            = 45
 SCHEDULER_BATCH_STEP  = True # [True, False]
 
 # ~ is the blank character
@@ -64,7 +64,7 @@ TRAIN_BATCH_SIZE      = 32
 VALID_BATCH_SIZE      = 32
 ACCUMULATE_ITERATION  = 1
 
-NET                   = "Image2TextNet" # []
+NET                   = "Image2TextNet" # ["Image2TextNet"]
 
 PRETRAINED            = False
 LEARNING_VERBOSE      = True
