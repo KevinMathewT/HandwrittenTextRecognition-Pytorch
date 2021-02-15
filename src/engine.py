@@ -10,7 +10,7 @@ from ranger_adabelief import RangerAdaBelief
 
 from . import config
 from .models.models import *
-from .utils import EditDistanceMeter, AverageLossMeter, get_one_from_batch
+from .utils import StringMatchingMetrics, AverageLossMeter, get_one_from_batch
 
 
 def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device, scaler, scheduler=None, schd_batch_update=False):
@@ -18,7 +18,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
 
     t = time.time()
     running_loss = AverageLossMeter()
-    running_distance = EditDistanceMeter()
+    running_string_metrics = StringMatchingMetrics()
     total_steps = len(train_loader)
     pbar = enumerate(train_loader)
     optimizer.zero_grad()
@@ -36,7 +36,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
                 # print(image_preds.size(), loss)
                 running_loss.update(
                     curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
-                running_distance.update(
+                running_string_metrics.update(
                     y_pred=image_preds.detach().cpu(),
                     y_true=image_labels,
                     batch_size=curr_batch_size)
@@ -64,7 +64,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
 
             running_loss.update(
                 curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
-            running_distance.update(
+            running_string_metrics.update(
                 y_pred=image_preds.detach().cpu(),
                 y_true=image_labels,
                 batch_size=curr_batch_size)
@@ -73,13 +73,16 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
             # print("Acc Update:", running_loss.avg)
 
         loss = running_loss.avg
-        edit = running_distance.avg
+        edit = running_string_metrics.avg_edit_distance
+        wer = running_string_metrics.avg_wer
+        mer = running_string_metrics.avg_mer
+        wil = running_string_metrics.avg_wil
         pred, true = get_one_from_batch(image_preds, image_labels)
         preds.append(pred)
         trues.append(true)
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Edit Distance: {edit:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {time.time() - t:.4f}'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | ED: {edit:.4f} | WER: {wer:.4f} | Time: {time.time() - t:.1f}'
             print(description, flush=True)
 
         if config.DEBUG_MODE: break
@@ -102,7 +105,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
 
     t = time.time()
     running_loss = AverageLossMeter()
-    running_distance = EditDistanceMeter()
+    running_string_metrics = StringMatchingMetrics()
     total_steps = len(valid_loader)
     pbar = enumerate(valid_loader)
     preds, trues = [], []
@@ -119,7 +122,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
                 # print(image_preds.size(), loss)
                 running_loss.update(
                     curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
-                running_distance.update(
+                running_string_metrics.update(
                     y_pred=image_preds.detach().cpu(),
                     y_true=image_labels,
                     batch_size=curr_batch_size)
@@ -130,7 +133,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
 
             running_loss.update(
                 curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
-            running_distance.update(
+            running_string_metrics.update(
                 y_pred=image_preds.detach().cpu(),
                 y_true=image_labels,
                 batch_size=curr_batch_size)
@@ -139,14 +142,17 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
             # print("Acc Update:", running_loss.avg)
 
         loss = running_loss.avg
-        edit = running_distance.avg
+        edit = running_string_metrics.avg_edit_distance
+        wer = running_string_metrics.avg_wer
+        mer = running_string_metrics.avg_mer
+        wil = running_string_metrics.avg_wil
         pred, true = get_one_from_batch(image_preds, image_labels)
         preds.append(pred)
         trues.append(true)
 
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Validation Loss: {loss:.4f} | Edit Distance: {edit:.4f} | Time: {time.time() - t:.4f}'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | ED: {edit:.4f} | WER: {wer:.4f} | Time: {time.time() - t:.1f}'
             print(description, flush=True)
             
         if config.DEBUG_MODE: break

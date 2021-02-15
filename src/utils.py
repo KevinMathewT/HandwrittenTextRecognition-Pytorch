@@ -14,6 +14,7 @@ from . import config
 from .transforms import *
 
 import editdistance
+import jiwer
 
 
 def get_img(path):
@@ -39,10 +40,11 @@ def bestPathDecoding(x):
     for i in range(1, len(x)):
         if x[i] != ret[-1]:
             ret += x[i]
-    
+
     ret = ret.replace("~", "")
 
     return ret
+
 
 def _clean_text(text):
     text = text.replace("&quot;", "\"")
@@ -110,22 +112,30 @@ class AccuracyMeter:
         return self.avg_score
 
 
-class EditDistanceMeter:
+class StringMatchingMetrics:
     def __init__(self):
         self.reset()
 
     def reset(self):
         self.score = 0
         self.count = 0
-        self.sum = 0
+        self.ed = 0
+        self.wer = 0
+        self.mer = 0
+        self.wil = 0
 
     def update(self, y_pred, y_true, batch_size=1):
         self.batch_size = batch_size
         self.count += self.batch_size
-        total_score = self.get_avg_edit_distance(y_pred, y_true)
-        self.sum += total_score
+        total_ed = self.get_total_edit_distance(y_pred, y_true)
+        total_wer, total_mer, total_wil = self.get_total_error_rates(
+            y_pred, y_true)
+        self.ed += total_ed
+        self.wer += total_wer
+        self.mer += total_mer
+        self.wil += total_wil
 
-    def get_avg_edit_distance(self, y_pred, y_true):
+    def get_total_edit_distance(self, y_pred, y_true):
         # print(y_pred.size(), len(y_true))
 
         y_pred = y_pred.permute(1, 0, 2)
@@ -142,11 +152,47 @@ class EditDistanceMeter:
 
         return total_distance
 
+    def get_total_error_rates(self, y_pred, y_true):
+        # print(y_pred.size(), len(y_true))
+
+        y_pred = y_pred.permute(1, 0, 2)
+        total_wer = 0.0
+        total_mer = 0.0
+        total_wil = 0.0
+
+        for i in range(len(y_true)):
+            pred = y_pred[i].view(config.TIME_STEPS, config.N_CLASSES)
+            pred = torch.argmax(pred, 1)
+            s = "".join([config.ID2CHAR[id.item()] for id in pred])
+            output_decoded = bestPathDecoding(s)
+            error = jiwer.compute_measures(y_true[i], output_decoded)
+            # print(output_decoded, y_true[i], distance)
+            total_wer += error['wer']
+            total_mer += error['mer']
+            total_wil += error['wil']
+
+        return total_wer, total_mer, total_wil
 
     @property
-    def avg(self):
-        self.avg_score = self.sum/self.count
+    def avg_edit_distance(self):
+        self.avg_score = self.ed / self.count
         return self.avg_score
+
+    @property
+    def avg_wer(self):
+        self.avg_score = self.wer / self.count
+        return self.avg_score
+
+    @property
+    def avg_mer(self):
+        self.avg_score = self.mer / self.count
+        return self.avg_score
+
+    @property
+    def avg_wil(self):
+        self.avg_score = self.wil / self.count
+        return self.avg_score
+
 
 def get_one_from_batch(y_pred, y_true):
     y_pred = y_pred.permute(1, 0, 2)
@@ -154,6 +200,7 @@ def get_one_from_batch(y_pred, y_true):
     pred = torch.argmax(y_pred[i], 1)
     s = "".join([config.ID2CHAR[id.item()] for id in pred])
     return s, y_true[i]
+
 
 def freeze_batchnorm_stats(net):
     try:
