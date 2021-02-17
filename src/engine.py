@@ -90,9 +90,10 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
     c = 0
     for pred, true in zip(preds, trues):
         print(f"------------------------------------------------------")
+        print(f"Predicted: {pred}")
+        print(f"Expected:  {true}")
         c += 1
         if c >= 5: break
-        print(f"{pred} | {true}")
         
     print(f"------------------------------------------------------")
     
@@ -159,11 +160,11 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
 
     c = 0
     for pred, true in zip(preds, trues):
-        c += 1
-        if c >= 5: break
         print(f"------------------------------------------------------")
         print(f"{pred}")
         print(f"{true}")
+        c += 1
+        if c >= 5: break
     print(f"------------------------------------------------------")
 
     if scheduler is not None:
