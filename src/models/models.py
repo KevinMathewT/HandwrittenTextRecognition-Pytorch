@@ -102,10 +102,9 @@ class Image2TextNet(nn.Module):
         super().__init__()
         self.RNN = Image2TextRecurrentNet()
 
-        self.USE_RESNET      = True
         self.TIME_STEPS      = config.TIME_STEPS
 
-        if self.USE_RESNET:
+        if config.CNN_BACKBONE == "ResNet18":
             self.resnet = timm.create_model("resnet18", pretrained=False)
             self.resnet.fc = nn.Identity()
             self.resnet.global_pool = nn.Identity()
@@ -117,7 +116,7 @@ class Image2TextNet(nn.Module):
             self.CNN = Image2TextConvNet()
  
     def forward(self, x):
-        if self.USE_RESNET:
+        if config.CNN_BACKBONE == "ResNet18":
             output = self.resnet(x)
             output = output.view(output.shape[0], output.shape[1], -1)
             output = output.permute(2, 0, 1).view(self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)

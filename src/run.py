@@ -11,64 +11,80 @@ from torchvision.utils import save_image
 
 import timm
 
-if __name__ == '__main__':
-    fold = 0
-    # train_folds = pd.read_csv(config.TRAIN_FOLDS)
-    # train = train_folds[train_folds.fold != fold]
-    # valid = train_folds[train_folds.fold == fold]
-    # train_dataset = HandWritingLinesDataset(train, transforms=get_train_transforms())
+# if __name__ == '__main__':
+#     fold = 0
+#     # train_folds = pd.read_csv(config.TRAIN_FOLDS)
+#     # train = train_folds[train_folds.fold != fold]
+#     # valid = train_folds[train_folds.fold == fold]
+#     # train_dataset = HandWritingLinesDataset(train, transforms=get_train_transforms())
     
-    # train_loader, valid_loader          = get_loaders(fold)
+#     # train_loader, valid_loader          = get_loaders(fold)
 
-    # nimages = 0
-    # mean = 0.
-    # std = 0.
-    # for batch, _ in tqdm(train_loader, total=len(train_loader)):
-    #     batch = torch.Tensor.float(batch.view(batch.size(0), batch.size(1), -1).cuda())
-    #     nimages += batch.size(0)
-    #     mean += batch.mean(2).sum(0) 
-    #     std += batch.std(2).sum(0)
+#     # nimages = 0
+#     # mean = 0.
+#     # std = 0.
+#     # for batch, _ in tqdm(train_loader, total=len(train_loader)):
+#     #     batch = torch.Tensor.float(batch.view(batch.size(0), batch.size(1), -1).cuda())
+#     #     nimages += batch.size(0)
+#     #     mean += batch.mean(2).sum(0) 
+#     #     std += batch.std(2).sum(0)
 
-    # mean /= nimages
-    # std /= nimages
+#     # mean /= nimages
+#     # std /= nimages
 
-    # print(mean)
-    # print(std)
+#     # print(mean)
+#     # print(std)
 
-    # for a, b in train_loader:
-    #     print(a.size())
-    #     print(len(b))
-    #     break
+#     # for a, b in train_loader:
+#     #     print(a.size())
+#     #     print(len(b))
+#     #     break
 
-    # print(timm.list_models('*res*'))
+#     # print(timm.list_models('*res*'))
 
-    input = torch.ones((4, 3, config.H, config.W))
-    net = timm.create_model("resnet18", pretrained=False)
-    # print(net)
-    net.fc = nn.Identity()
-    net.global_pool = nn.Identity()
-    # net.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-    # net.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
-    net.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-    net.layer4[0].downsample[0] = nn.Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
-    # # net.bn2 = nn.Identity()
-    # # net.conv_head = nn.Identity()
-    # # net.blocks[6] = nn.Identity()
-    out = net(input)
-    out = out.view(out.shape[0], out.shape[1], -1)
-    out = out.permute(2, 0, 1)
-    print(out.size())
+#     input = torch.ones((4, 3, config.H, config.W))
+#     # net = timm.create_model("resnet18", pretrained=False)
+#     # # print(net)
+#     # net.fc = nn.Identity()
+#     # net.global_pool = nn.Identity()
+#     # # net.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+#     # # net.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+#     # net.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+#     # net.layer4[0].downsample[0] = nn.Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+#     # # # net.bn2 = nn.Identity()
+#     # # # net.conv_head = nn.Identity()
+#     # # # net.blocks[6] = nn.Identity()
+#     # out = net(input)
+#     # out = out.view(out.shape[0], out.shape[1], -1)
+#     # out = out.permute(2, 0, 1)
+#     # print(out.size())
 
-    # a = torch.Tensor([i for i in range(64)])
-    # a = a.view(2, 2, 4, 4)
-    # print(a)
-    # a = a.view(2, 2, 16)
-    # print(a)
-    # a = a.view(2, 4, 8)
-    # print(a)
-    # a = a.permute(1, 0, 2).contiguous()
-    # print(a)
-    # print(a.view(2, -1))
+    
+#     resnet = timm.create_model("resnet18", pretrained=False)
+#     resnet.fc = nn.Identity()
+#     resnet.global_pool = nn.Identity()
+#     # self.resnet.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+#     # self.resnet.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+#     resnet.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+#     resnet.layer4[0].downsample[0] = nn.Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+
+    
+#     output = resnet(input)
+#     output = output.view(output.shape[0], output.shape[1], -1)
+#     output = output.permute(2, 0, 1).view(config.TIME_STEPS, -1, config.RNN_INPUT_SIZE)
+
+#     print(output.size())
+
+#     # a = torch.Tensor([i for i in range(64)])
+#     # a = a.view(2, 2, 4, 4)
+#     # print(a)
+#     # a = a.view(2, 2, 16)
+#     # print(a)
+#     # a = a.view(2, 4, 8)
+#     # print(a)
+#     # a = a.permute(1, 0, 2).contiguous()
+#     # print(a)
+#     # print(a.view(2, -1))
 
 
 '''
