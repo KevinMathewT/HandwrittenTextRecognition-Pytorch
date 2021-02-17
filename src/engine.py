@@ -161,8 +161,8 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
     c = 0
     for pred, true in zip(preds, trues):
         print(f"------------------------------------------------------")
-        print(f"{pred}")
-        print(f"{true}")
+        print(f"Predicted: {pred}")
+        print(f"Expected:  {true}")
         c += 1
         if c >= 5: break
     print(f"------------------------------------------------------")
