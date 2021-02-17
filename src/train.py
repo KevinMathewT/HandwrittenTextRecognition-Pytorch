@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 
 def run_fold(fold):
     create_dirs()
-    print(f"___________________________________________________")
+    print(f"------------------------------------------------------------------------------")
     print(f"Training Model:              {config.NET}")
     print(f"Training Fold:               {fold}")
     print(f"Image Dimensions:            {config.H}x{config.W}")
@@ -51,6 +51,7 @@ def run_fold(fold):
                         device, scheduler=None, schd_loss_update=False)
 
         print(f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}] Time Taken for Epoch {epoch}: {time.time() - epoch_start} seconds |')
+        print(f"------------------------------------------------------------------------------")                                                                      
 
         torch.save(net.state_dict(), os.path.join(config.WEIGHTS_PATH,
                                                   f'{config.NET}/{config.NET}_fold_{fold}_{epoch}.bin'))
@@ -58,7 +59,7 @@ def run_fold(fold):
     #torch.save(model.cnn_model.state_dict(),'{}/cnn_model_fold_{}_{}'.format(CFG['model_path'], fold, CFG['tag']))
     del net, optimizer, train_loader, valid_loader, scheduler
     torch.cuda.empty_cache()
-    print(f"___________________________________________________")
+    print(f"------------------------------------------------------------------------------")
 
 
 def train():
