@@ -82,7 +82,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
         trues.append(true)
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | ED: {edit:.4f} | WER: {wer:.4f} | Time: {(time.time() - t) / 60:.2f}m'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | ED: {edit:.4f} | WER: {wer:.4f} | Time: {(time.time() - t) / 60:.2f} m'
             print(description, flush=True)
 
         if config.DEBUG_MODE: break
@@ -153,7 +153,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler
 
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | ED: {edit:.4f} | WER: {wer:.4f} | Time: {(time.time() - t) / 60:.2f}m'
+            description = f'[{fold}/{config.FOLDS - 1}][{epoch:>2d}/{config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | ED: {edit:.4f} | WER: {wer:.4f} | Time: {(time.time() - t) / 60:.2f} m'
             print(description, flush=True)
             
         if config.DEBUG_MODE: break
