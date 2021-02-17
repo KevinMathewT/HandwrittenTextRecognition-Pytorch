@@ -1,36 +1,38 @@
-import pandas as pd
-import numpy as np
+import os
+from src.segment import lineSegment
+import cv2
+
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
+def display_lines(lines_arr, orient='vertical'):
+    plt.figure(figsize=(30, 30))
+    if not orient in ['vertical', 'horizontal']:
+        raise ValueError("Orientation is on of 'vertical', 'horizontal', defaul = 'vertical'") 
+    if orient == 'vertical': 
+        for i, l in enumerate(lines_arr):
+            line = l
+            plt.subplot(2, 10, i+1)  # A grid of 2 rows x 10 columns
+            plt.axis('off')
+            plt.title("Line #{0}".format(i))
+            _ = plt.imshow(line, cmap='gray', interpolation = 'bicubic')
+            plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+    else:
+            for i, l in enumerate(lines_arr):
+                line = l
+                plt.subplot(40, 1, i+1)  # A grid of 40 rows x 1 columns
+                plt.axis('off')
+                plt.title("Line #{0}".format(i))
+                _ = plt.imshow(line, cmap='gray', interpolation = 'bicubic')
+                plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+    plt.show()
 
-from src.dataset import CassavaDataset, get_infer_dataloader
-from src.engine import get_device, get_net, get_optimizer_and_scheduler, train_one_epoch, valid_one_epoch
-from src.config import *
-from src.utils import *
-from src.loss import FocalCosineLoss, SmoothCrossEntropyLoss, bi_tempered_logistic_loss
+img_path = os.path.join("./input/", "sample/a00-001u.png")
+img = cv2.imread(img_path) 
 
-os.environ["XLA_TENSOR_ALLOCATOR_MAXSIZE"] = "100000000"
+found_lines = lineSegment(img)
 
-df = pd.read_csv(TRAIN_FOLDS)
-dataloader = get_infer_dataloader(infer=df)
-device = get_device(n=0)
-net = get_net(name=NET, pretrained=False)
-net.load_state_dict(torch.load("../input/model-weights/SEResNeXt50_32x4d_BH_fold_2_11.bin", map_location=torch.device('cpu')))
-net = net.to(device)
-
-preds = np.empty((0, 5), dtype=np.float64)
-for images, labels in tqdm(dataloader):
-    images, labels = images.to(device), labels.to(device)
-    predictions = net(images).detach().cpu().numpy()
-    preds = np.concatenate([preds, predictions], axis=0)
-
-print(preds.shape)
-ids = df["image_id"].to_numpy().reshape(-1, 1)
-preds = np.concatenate([ids, preds], axis=1)
-print(preds.shape)
-preds = pd.DataFrame(preds, columns=['id', '0', '1', '2', '3', '4'])
-preds.to_csv("SEResNeXt50_32x4d_BH_2_preds.csv", index=False)
+print(len(found_lines))
+for line in found_lines:
+    print(line.shape)
+    
+display_lines(found_lines)
