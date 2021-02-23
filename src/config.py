@@ -46,8 +46,8 @@ H                     = 1024 # [32, 384, 512]
 W                     = 64 # [128, 384, 512]
 C                     = 1
 
-CNN_BACKBONE          = "ResNet18" # [None, ResNet18]
-OPTIMIZER             = "RAdam"  # [Adam, AdamW, RAdam, AdaBelief, RangerAdaBelief]
+CNN_BACKBONE          = "EfficientNetB0_NS" # [None, ResNet18]
+OPTIMIZER             = "Adam"  # [Adam, AdamW, RAdam, AdaBelief, RangerAdaBelief]
 SCHEDULER             = "CosineAnnealingWarmRestarts" # [ReduceLROnPlateau, CosineAnnealingLR, OneCycleLR, CosineAnnealingWarmRestarts, StepLR]
 SCHEDULER_WARMUP      = True # [True, False]
 WARMUP_EPOCHS         = 3 if SCHEDULER_WARMUP else 0

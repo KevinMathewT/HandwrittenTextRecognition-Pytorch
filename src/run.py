@@ -11,7 +11,7 @@ from torchvision.utils import save_image
 
 import timm
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
 #     fold = 0
 #     # train_folds = pd.read_csv(config.TRAIN_FOLDS)
 #     # train = train_folds[train_folds.fold != fold]
@@ -85,6 +85,38 @@ import timm
 #     # a = a.permute(1, 0, 2).contiguous()
 #     # print(a)
 #     # print(a.view(2, -1))
+
+    input = torch.ones((4, 3, config.H, config.W))
+    resnet = timm.create_model("resnet18", pretrained=False)
+    resnet.fc = nn.Identity()
+    resnet.global_pool = nn.Identity()
+    # resnet.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    # resnet.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+    resnet.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    resnet.layer4[0].downsample[0] = nn.Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+    # torch.Size([4, 512, 64, 4])
+
+    # print(timm.list_models("*eff*"))
+
+    effnet_b0 = timm.create_model("tf_efficientnet_b0_ns", pretrained=False)
+    effnet_b0.classifier = nn.Identity()
+    effnet_b0.global_pool = nn.Identity()
+    effnet_b0.act2 = nn.Identity()
+    effnet_b0.bn2 = nn.Identity()
+    # effnet_b0.conv_head = nn.Identity()
+    effnet_b0.conv_head = nn.Conv2d(192, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+    effnet_b0.blocks[6] = nn.Identity()
+    effnet_b0.blocks[5][0].conv_dw = nn.Identity()
+    print(effnet_b0)
+    # effnet_b0.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    # effnet_b0.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+    # effnet_b0.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    # effnet_b0.layer4[0].downsample[0] = nn.Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+    # torch.Size([4, 512, 64, 4])
+
+    output = effnet_b0(input)
+    print(input.size())
+    print(output.size())
 
 
 '''

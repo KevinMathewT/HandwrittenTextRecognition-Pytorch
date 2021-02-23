@@ -26,7 +26,7 @@ def display_lines(lines_arr, orient='vertical'):
                 plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
     plt.show()
 
-img_path = os.path.join("./input/", "sample/a00-001u.png")
+img_path = os.path.join("./input/", "sample/dm.png")
 img = cv2.imread(img_path) 
 
 found_lines = lineSegment(img)

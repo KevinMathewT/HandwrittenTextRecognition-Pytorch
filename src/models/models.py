@@ -9,27 +9,30 @@ from collections import OrderedDict
 
 from .. import config
 
+
 class Image2TextConvNet(nn.Module):
     def __init__(self):
         super().__init__()
         layers = OrderedDict()
 
-        self.CONV_CHANNELS    = [32, 64, 128, 128, 256]
-        self.CONV_KERNEL      = [7, 5, 5, 3, 3, 3]
-        self.CONV_STRIDE      = [1, 1, 1, 1, 1, 1]
-        self.CONV_PADDING     = [3, 2, 2, 1, 1, 1]
-        self.BATCH_NORM       = [1, 1, 1, 1, 1, 1] # 1 means we will have a Batch Normalization Layer
-        self.LEAKY_RELU       = [0, 0, 0, 0, 0, 0]
-        self.DROPOUT          = [0, 0, 0, 0, 0, 0] # 0 means we will not have any Dropout
-        self.MAX_POOLING      = [ 
-                                    [(2, 2), (2, 2)], 
-                                    [(2, 2), (2, 2)], 
-                                    [(1, 2), (1, 2)], 
-                                    [(1, 2), (1, 2)], 
-                                    [(1, 2), (1, 2)], 
-                                    [], 
-                                ]
-        self.NUM_LAYERS      = len(self.CONV_CHANNELS)
+        self.CONV_CHANNELS = [32, 64, 128, 128, 256]
+        self.CONV_KERNEL = [7, 5, 5, 3, 3, 3]
+        self.CONV_STRIDE = [1, 1, 1, 1, 1, 1]
+        self.CONV_PADDING = [3, 2, 2, 1, 1, 1]
+        # 1 means we will have a Batch Normalization Layer
+        self.BATCH_NORM = [1, 1, 1, 1, 1, 1]
+        self.LEAKY_RELU = [0, 0, 0, 0, 0, 0]
+        # 0 means we will not have any Dropout
+        self.DROPOUT = [0, 0, 0, 0, 0, 0]
+        self.MAX_POOLING = [
+            [(2, 2), (2, 2)],
+            [(2, 2), (2, 2)],
+            [(1, 2), (1, 2)],
+            [(1, 2), (1, 2)],
+            [(1, 2), (1, 2)],
+            [],
+        ]
+        self.NUM_LAYERS = len(self.CONV_CHANNELS)
 
         # Convolution --> Batch Normalization --> ReLU / LeakyReLU --> Dropout --> MaxPooling
         for i in range(self.NUM_LAYERS):
@@ -37,16 +40,17 @@ class Image2TextConvNet(nn.Module):
             out_channels = self.CONV_CHANNELS[i]
 
             layers["conv_%d" % (i)] = nn.Conv2d(
-                    in_channels=in_channels,
-                    out_channels=out_channels,
-                    kernel_size=self.CONV_KERNEL[i],
-                    stride=self.CONV_STRIDE[i],
-                    padding=self.CONV_PADDING[i]
-                )
+                in_channels=in_channels,
+                out_channels=out_channels,
+                kernel_size=self.CONV_KERNEL[i],
+                stride=self.CONV_STRIDE[i],
+                padding=self.CONV_PADDING[i]
+            )
 
             if self.BATCH_NORM[i]:
-                layers["batch_norm_%d" % (i)] = nn.BatchNorm2d(num_features=out_channels)
-            
+                layers["batch_norm_%d" % (i)] = nn.BatchNorm2d(
+                    num_features=out_channels)
+
             if self.LEAKY_RELU[i]:
                 layers["leaky_relu_%d" % (i)] = nn.LeakyReLU(self.LEAKY_RELU)
             else:
@@ -54,26 +58,27 @@ class Image2TextConvNet(nn.Module):
 
             if self.DROPOUT[i]:
                 layers["dropout_%d" % (i)] = nn.Dropout(self.DROPOUT[i])
-            
-            if len(self.MAX_POOLING[i]) > 0:
-                layers["max_pooling_%d" % (i)] = nn.MaxPool2d(*self.MAX_POOLING[i])
 
-            
+            if len(self.MAX_POOLING[i]) > 0:
+                layers["max_pooling_%d" %
+                       (i)] = nn.MaxPool2d(*self.MAX_POOLING[i])
+
         # *[...] allows unpacking list elements as parameters to a function
         self.context_net = nn.Sequential(layers)
 
     def forward(self, x):
         return self.context_net(x)
 
+
 class Image2TextRecurrentNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.RNN_INPUT_SIZE  = config.RNN_INPUT_SIZE
+        self.RNN_INPUT_SIZE = config.RNN_INPUT_SIZE
         self.RNN_HIDDEN_SIZE = 256
-        self.RNN_LAYERS      = 2
-        self.BIDIRECTIONAL   = True
-        self.RNN_DROPOUT     = 0
+        self.RNN_LAYERS = 2
+        self.BIDIRECTIONAL = True
+        self.RNN_DROPOUT = 0
 
         self.recurrent = nn.LSTM(
             input_size=self.RNN_INPUT_SIZE,
@@ -97,12 +102,13 @@ class Image2TextRecurrentNet(nn.Module):
 
         return log_probs
 
+
 class Image2TextNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.RNN = Image2TextRecurrentNet()
 
-        self.TIME_STEPS      = config.TIME_STEPS
+        self.TIME_STEPS = config.TIME_STEPS
 
         if config.CNN_BACKBONE == "ResNet18":
             self.resnet = timm.create_model("resnet18", pretrained=False)
@@ -110,16 +116,39 @@ class Image2TextNet(nn.Module):
             self.resnet.global_pool = nn.Identity()
             # self.resnet.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
             # self.resnet.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
-            self.resnet.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-            self.resnet.layer4[0].downsample[0] = nn.Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            self.resnet.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(
+                3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            self.resnet.layer4[0].downsample[0] = nn.Conv2d(
+                256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+
+        elif config.CNN_BACKBONE == "EfficientNetB0_NS":
+            self.effnet_b0 = timm.create_model(
+                "tf_efficientnet_b0_ns", pretrained=False)
+            self.effnet_b0.classifier = nn.Identity()
+            self.effnet_b0.global_pool = nn.Identity()
+            self.effnet_b0.act2 = nn.Identity()
+            self.effnet_b0.bn2 = nn.Identity()
+            # self.effnet_b0.conv_head = nn.Identity()
+            self.effnet_b0.conv_head = nn.Conv2d(
+                192, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            self.effnet_b0.blocks[6] = nn.Identity()
+            self.effnet_b0.blocks[5][0].conv_dw = nn.Identity()
         else:
             self.CNN = Image2TextConvNet()
- 
+
     def forward(self, x):
         if config.CNN_BACKBONE == "ResNet18":
             output = self.resnet(x)
             output = output.view(output.shape[0], output.shape[1], -1)
-            output = output.permute(2, 0, 1).view(self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
+            output = output.permute(2, 0, 1).view(
+                self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
+
+        elif config.CNN_BACKBONE == "EfficientNetB0_NS":
+            output = self.effnet_b0(x)
+            output = output.view(output.shape[0], output.shape[1], -1)
+            output = output.permute(2, 0, 1).view(
+                self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
+
         else:
             output = self.CNN(x)
             output = output.squeeze(3)
@@ -130,7 +159,7 @@ class Image2TextNet(nn.Module):
 
 
 nets = {
-    "Image2TextNet"         : Image2TextNet,
+    "Image2TextNet": Image2TextNet,
 }
 
 
