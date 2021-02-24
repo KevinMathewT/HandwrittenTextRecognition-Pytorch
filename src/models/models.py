@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchvision
 
 import timm
+from timm.models.layers.conv2d_same import Conv2dSame
 from vision_transformer_pytorch import VisionTransformer
 
 from collections import OrderedDict
@@ -10,65 +11,49 @@ from collections import OrderedDict
 from .. import config
 
 
-class Image2TextConvNet(nn.Module):
-    def __init__(self):
-        super().__init__()
-        layers = OrderedDict()
+def getCNNBackbone():
+    if config.CNN_BACKBONE == "ResNet18" or config.CNN_BACKBONE is None:
+        resnet = timm.create_model(
+            "resnet18", pretrained=config.BACKBONE_PRETRAINED)
+        resnet.fc = nn.Identity()
+        resnet.global_pool = nn.Identity()
+        # self.resnet.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        # self.resnet.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        resnet.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        resnet.layer4[0].downsample[0] = nn.Conv2d(
+            256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        return resnet
 
-        self.CONV_CHANNELS = [32, 64, 128, 128, 256]
-        self.CONV_KERNEL = [7, 5, 5, 3, 3, 3]
-        self.CONV_STRIDE = [1, 1, 1, 1, 1, 1]
-        self.CONV_PADDING = [3, 2, 2, 1, 1, 1]
-        # 1 means we will have a Batch Normalization Layer
-        self.BATCH_NORM = [1, 1, 1, 1, 1, 1]
-        self.LEAKY_RELU = [0, 0, 0, 0, 0, 0]
-        # 0 means we will not have any Dropout
-        self.DROPOUT = [0, 0, 0, 0, 0, 0]
-        self.MAX_POOLING = [
-            [(2, 2), (2, 2)],
-            [(2, 2), (2, 2)],
-            [(1, 2), (1, 2)],
-            [(1, 2), (1, 2)],
-            [(1, 2), (1, 2)],
-            [],
-        ]
-        self.NUM_LAYERS = len(self.CONV_CHANNELS)
+    elif config.CNN_BACKBONE == "EfficientNetB0_NS":
+        effnet_b0 = timm.create_model(
+            "tf_efficientnet_b0_ns", pretrained=config.BACKBONE_PRETRAINED)
+        effnet_b0.classifier = nn.Identity()
+        effnet_b0.global_pool = nn.Identity()
+        # effnet_b0.act2 = nn.Identity()
+        effnet_b0.bn2 = nn.BatchNorm2d(
+            512, eps=0.001, momentum=0.1, affine=True, track_running_stats=True)
+        # effnet_b0.conv_head = nn.Identity()
+        effnet_b0.conv_head = nn.Conv2d(
+            320, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        effnet_b0.blocks[5][0].conv_dw = Conv2dSame(
+            672, 672, kernel_size=(5, 5), stride=(1, 1), groups=672, bias=False)
+        return effnet_b0
 
-        # Convolution --> Batch Normalization --> ReLU / LeakyReLU --> Dropout --> MaxPooling
-        for i in range(self.NUM_LAYERS):
-            in_channels = config.C if i == 0 else self.CONV_CHANNELS[i - 1]
-            out_channels = self.CONV_CHANNELS[i]
-
-            layers["conv_%d" % (i)] = nn.Conv2d(
-                in_channels=in_channels,
-                out_channels=out_channels,
-                kernel_size=self.CONV_KERNEL[i],
-                stride=self.CONV_STRIDE[i],
-                padding=self.CONV_PADDING[i]
-            )
-
-            if self.BATCH_NORM[i]:
-                layers["batch_norm_%d" % (i)] = nn.BatchNorm2d(
-                    num_features=out_channels)
-
-            if self.LEAKY_RELU[i]:
-                layers["leaky_relu_%d" % (i)] = nn.LeakyReLU(self.LEAKY_RELU)
-            else:
-                layers["relu_%d" % (i)] = nn.ReLU()
-
-            if self.DROPOUT[i]:
-                layers["dropout_%d" % (i)] = nn.Dropout(self.DROPOUT[i])
-
-            if len(self.MAX_POOLING[i]) > 0:
-                layers["max_pooling_%d" %
-                       (i)] = nn.MaxPool2d(*self.MAX_POOLING[i])
-
-        # *[...] allows unpacking list elements as parameters to a function
-        self.context_net = nn.Sequential(layers)
-
-    def forward(self, x):
-        return self.context_net(x)
-
+    elif config.CNN_BACKBONE == "EfficientNetB1_NS":
+        effnet_b1 = timm.create_model(
+            "tf_efficientnet_b1_ns", pretrained=config.BACKBONE_PRETRAINED)
+        effnet_b1.classifier = nn.Identity()
+        effnet_b1.global_pool = nn.Identity()
+        # effnet_b1.act2 = nn.Identity()
+        effnet_b1.bn2 = nn.BatchNorm2d(
+            512, eps=0.001, momentum=0.1, affine=True, track_running_stats=True)
+        # effnet_b1.conv_head = nn.Identity()
+        effnet_b1.conv_head = nn.Conv2d(
+            320, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        effnet_b1.blocks[5][0].conv_dw = Conv2dSame(
+            672, 672, kernel_size=(5, 5), stride=(1, 1), groups=672, bias=False)
+        return effnet_b1
 
 class Image2TextRecurrentNet(nn.Module):
     def __init__(self):
@@ -109,50 +94,13 @@ class Image2TextNet(nn.Module):
         self.RNN = Image2TextRecurrentNet()
 
         self.TIME_STEPS = config.TIME_STEPS
-
-        if config.CNN_BACKBONE == "ResNet18":
-            self.resnet = timm.create_model("resnet18", pretrained=False)
-            self.resnet.fc = nn.Identity()
-            self.resnet.global_pool = nn.Identity()
-            # self.resnet.layer3[0].conv1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-            # self.resnet.layer3[0].downsample[0] = nn.Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
-            self.resnet.layer4[0].conv1 = nn.Conv2d(256, 512, kernel_size=(
-                3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-            self.resnet.layer4[0].downsample[0] = nn.Conv2d(
-                256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
-
-        elif config.CNN_BACKBONE == "EfficientNetB0_NS":
-            self.effnet_b0 = timm.create_model(
-                "tf_efficientnet_b0_ns", pretrained=False)
-            self.effnet_b0.classifier = nn.Identity()
-            self.effnet_b0.global_pool = nn.Identity()
-            self.effnet_b0.act2 = nn.Identity()
-            self.effnet_b0.bn2 = nn.Identity()
-            # self.effnet_b0.conv_head = nn.Identity()
-            self.effnet_b0.conv_head = nn.Conv2d(
-                192, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
-            self.effnet_b0.blocks[6] = nn.Identity()
-            self.effnet_b0.blocks[5][0].conv_dw = nn.Identity()
-        else:
-            self.CNN = Image2TextConvNet()
+        self.cnn_backbone = getCNNBackbone()
 
     def forward(self, x):
-        if config.CNN_BACKBONE == "ResNet18":
-            output = self.resnet(x)
-            output = output.view(output.shape[0], output.shape[1], -1)
-            output = output.permute(2, 0, 1).view(
-                self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
-
-        elif config.CNN_BACKBONE == "EfficientNetB0_NS":
-            output = self.effnet_b0(x)
-            output = output.view(output.shape[0], output.shape[1], -1)
-            output = output.permute(2, 0, 1).view(
-                self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
-
-        else:
-            output = self.CNN(x)
-            output = output.squeeze(3)
-            output = output.permute(2, 0, 1)
+        output = self.cnn_backbone(x)
+        output = output.view(output.shape[0], output.shape[1], -1)
+        output = output.permute(2, 0, 1).view(
+            self.TIME_STEPS, -1, self.RNN.RNN_INPUT_SIZE)
 
         output = self.RNN(output)
         return output
