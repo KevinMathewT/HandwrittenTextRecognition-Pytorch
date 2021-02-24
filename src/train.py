@@ -22,6 +22,7 @@ def run_fold(fold):
     print(f"Training Model:              {config.NET}")
     print(f"Training Fold:               {fold}")
     print(f"Image Dimensions:            {config.H}x{config.W}")
+    print(f"CNN Backbone:                {config.CNN_BACKBONE}")
     print(f"Mixed Precision Training:    {config.MIXED_PRECISION_TRAIN}")
     print(f"Training Batch Size:         {config.TRAIN_BATCH_SIZE}")
     print(f"Validation Batch Size:       {config.VALID_BATCH_SIZE}")
