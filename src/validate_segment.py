@@ -72,8 +72,9 @@ def get_dataloader():
 def validate_model():
     torch.cuda.empty_cache()
     net = get_net(name=config.NET)
-    net.load_state_dict(torch.load(config.SAVED_WEIGHTS_PATH))
+    net.load_state_dict(torch.load(config.VALIDATE_WEIGHTS_PATH))
     net.eval()
+
     print(f"------------------------------------------------------------------------------")
     print(f"Validating Model:            {config.NET}")
     print(f"Image Dimensions:            {config.H}x{config.W}")
