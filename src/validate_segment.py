@@ -39,11 +39,7 @@ class HandWritingFormsDataset(Dataset):
             for i, line in enumerate(lines):
                 lines[i] = self.transforms(image=line)['image']
 
-        for i, line in enumerate(lines):
-            print(f"{i}: {line.shape}")
-        lines = np.ndarray(lines)
-        print(lines.shape)
-        lines = torch.tensor(lines)
+        lines = torch.stack(lines)
         print(lines.size())
 
         return lines, target
