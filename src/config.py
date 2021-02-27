@@ -66,7 +66,7 @@ N_CLASSES                = len(CLASSES) + 1 # 1 for blank for CTC
 
 TRAIN_BATCH_SIZE         = 32
 VALID_BATCH_SIZE         = 32
-VALID_SEGMENT_BATCH_SIZE = 4
+VALID_SEGMENT_BATCH_SIZE = 1
 ACCUMULATE_ITERATION     = 1
    
 NET                      = "Image2TextNet" # ["Image2TextNet"]

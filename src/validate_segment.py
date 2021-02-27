@@ -102,6 +102,6 @@ def validate_model():
 
 if __name__ == "__main__":
     df = create_df()
-    # validate_model()
+    validate_model()
 
     pass
