@@ -179,14 +179,13 @@ def test_pipeline(model, loss_fn, loader, device):
     model.eval()
 
     t = time.time()
-    running_loss = AverageLossMeter()
     running_string_metrics = StringMatchingMetrics()
     total_steps = len(loader)
     pbar = enumerate(loader)
     preds, trues = [], []
 
     for step, (imgs, image_labels) in pbar:
-        imgs, image_labels = imgs.to(device, dtype=torch.float32), image_labels
+        imgs, image_labels = imgs.to(device, dtype=torch.float32).squeeze(0), image_labels
         curr_batch_size = imgs.size(0)
 
         # print(image_labels.shape, exam_label.shape)
