@@ -13,6 +13,7 @@ from . import config
 from .utils import *
 from .loss import get_valid_criterion
 from .transforms import get_valid_transforms
+from .utils import _clean_text
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -42,7 +43,7 @@ def parse_xml_file(xml_file):
     labels = []
     for child in root[0]:
         labels.append(child.attrib["text"])
-    label = " ".join(labels)
+    label = _clean_text(" ".join(labels))
     return label
 
 
