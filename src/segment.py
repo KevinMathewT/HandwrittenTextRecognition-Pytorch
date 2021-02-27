@@ -88,7 +88,8 @@ def crop_text_to_lines(text, blanks):
 
 def segment_lines(img):
     img1 = img
-    img2 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    img1 = np.transpose(img1, (1, 0, 2))
+    img2 = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     img3 = np.transpose(img2)
     img = np.arange(16).reshape((4, 4))
 
@@ -112,6 +113,6 @@ def segment_lines(img):
     mins = argrelmin(smoothed, order=2)
     arr_mins = np.array(mins)
 
-    found_lines = crop_text_to_lines(img3, arr_mins[0])
+    found_lines = crop_text_to_lines(img1, arr_mins[0])
 
     return found_lines

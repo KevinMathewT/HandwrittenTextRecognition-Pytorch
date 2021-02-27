@@ -4,7 +4,9 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-from src.segment import lineSegment
+from src.segment import segment_lines
+
+from .utils import get_img
 
 
 def display_lines(lines_arr, orient='vertical'):
@@ -33,15 +35,13 @@ def display_lines(lines_arr, orient='vertical'):
     plt.show()
 
 
-img_path = os.path.join("./input/", "sample/dm.png")
-img = cv2.imread(img_path)
+img_path = os.path.join("./input/", "sample/a00-000u.png") # ["a00-000u"]
+img = get_img(img_path)
 
-found_lines = lineSegment(img)
+found_lines = segment_lines(img)
 
 print(len(found_lines))
 for line in found_lines:
     print(line.shape)
 
-found_lines = np.array(found_lines)
-
-display_lines(found_lines.shape)
+display_lines(found_lines)
