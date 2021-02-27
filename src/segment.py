@@ -67,10 +67,11 @@ def smooth(x, window_len=11, window='hanning'):
     if window == 'flat':  # moving average
         w = np.ones(window_len, 'd')
     else:
-        w = eval('np.'+window+'(window_len)')
+        w = eval('np.' + window + '(window_len)')
 
-    y = np.convolve(w/w.sum(), s, mode='valid')
+    y = np.convolve(w / w.sum(), s, mode='valid')
     return y
+
 
 def crop_text_to_lines(text, blanks):
     x1 = 0
@@ -78,37 +79,30 @@ def crop_text_to_lines(text, blanks):
     lines = []
     for i, blank in enumerate(blanks):
         x2 = blank
-        print("x1=", x1, ", x2=", x2, ", Diff= ", x2-x1)
+        print(f"x1 = {x1:3d}, x2 = {x2:3d}, diff = {x2 - x1:3d}")
         line = text[:, x1:x2]
         lines.append(line)
         x1 = blank
     return lines
 
+
 def lineSegment(img):
     img1 = img
-    print(img1.ndim)
-    print(img1.shape)
     img2 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    print(img2.shape)
-    print(type(img2))
     img3 = np.transpose(img2)
     img = np.arange(16).reshape((4, 4))
 
     kernelSize = 9
     sigma = 4
     theta = 1.5
-    #25, 0.8, 3.5
 
     imgFiltered1 = cv2.filter2D(
         img3, -1, createKernel(kernelSize, sigma, theta), borderType=cv2.BORDER_REPLICATE)
     img4 = normalize(imgFiltered1)
 
     (m, s) = cv2.meanStdDev(imgFiltered1)
-    print(m[0][0])
 
     summ = applySummFunctin(img4)
-    print(summ.ndim)
-    print(summ.shape)
 
     windows = ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
     smoothed = smooth(summ, 35)
@@ -119,5 +113,5 @@ def lineSegment(img):
     arr_mins = np.array(mins)
 
     found_lines = crop_text_to_lines(img3, arr_mins[0])
-    
+
     return found_lines

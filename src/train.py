@@ -66,15 +66,9 @@ def run_fold(fold):
 def train():
     global net
     torch.cuda.empty_cache()
-    if not config.PARALLEL_FOLD_TRAIN:
-        for fold in [0]:
-            net = get_net(name=config.NET)
-            run_fold(fold)
-
-    if config.PARALLEL_FOLD_TRAIN:
-        n_jobs = config.FOLDS
-        parallel = Parallel(n_jobs=n_jobs, backend="threading")
-        parallel(delayed(run_fold)(fold) for fold in range(config.FOLDS))
+    for fold in [0]:
+        net = get_net(name=config.NET)
+        run_fold(fold)
 
 
 if __name__ == "__main__":
