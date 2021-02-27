@@ -14,6 +14,7 @@ from .utils import *
 from .loss import get_valid_criterion
 from .transforms import get_valid_transforms
 from .utils import _clean_text
+from .segment import segment_lines
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -30,12 +31,17 @@ class HandWritingFormsDataset(Dataset):
 
     def __getitem__(self, index: int):
         img = get_img(self.df.loc[index]['path']).copy()
+        lines = segment_lines(img)
         target = self.df.loc[index]['label']
 
         if self.transforms:
-            img = self.transforms(image=img)['image']
+            for i, line in enumerate(lines):
+                lines[i] = self.transforms(image=line)['image']
 
-        return img, target
+        lines = torch.tensor(lines)
+        print(lines.size())
+
+        return lines, target
 
 def parse_xml_file(xml_file):
     tree = ET.parse(xml_file)

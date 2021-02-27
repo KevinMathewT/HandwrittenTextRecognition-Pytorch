@@ -86,7 +86,7 @@ def crop_text_to_lines(text, blanks):
     return lines
 
 
-def lineSegment(img):
+def segment_lines(img):
     img1 = img
     img2 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     img3 = np.transpose(img2)
