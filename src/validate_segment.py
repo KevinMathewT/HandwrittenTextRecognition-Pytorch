@@ -50,7 +50,7 @@ def create_df():
     forms = glob.glob(config.FORMS_PATH + "/*/*.png")
     df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
     df["image_id"] = df.apply(lambda row: row.path.split("\\")[-1].split('.')[0], axis=1)
-    df["xml"] = df.apply(lambda row: os.path.join(config.GENERATED_FILES_PATH, "xml", row.image_id) + ".xml", axis=1)
+    df["xml"] = df.apply(lambda row: os.path.join(config.GENERATED_FILES_PATH, "xml") + row.image_id + ".xml", axis=1)
     df["label"] = df.apply(lambda row: parse_xml_file(row.xml), axis=1)
     df = df[["image_id", "path", "label", "xml"]]
 
