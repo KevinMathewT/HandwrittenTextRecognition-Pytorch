@@ -55,7 +55,7 @@ def create_df():
     df["label"] = df.apply(lambda row: parse_xml_file(row.xml), axis=1)
     df = df[["image_id", "path", "label", "xml"]]
 
-    print(df)
+    print(df["label"])
     return df
 
 def get_dataloader():
