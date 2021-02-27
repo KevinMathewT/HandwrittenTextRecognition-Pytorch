@@ -24,6 +24,7 @@ TRAIN_IMAGES_DIR_2       = os.path.join(DATASET_PATH, "val")
 TRAIN_1                  = os.path.join(DATASET_PATH, "train_list.txt")
 TRAIN_2                  = os.path.join(DATASET_PATH, "val_list.txt")
 TRAIN_FOLDS              = os.path.join(GENERATED_FILES_PATH, "train_folds.csv")
+VALIDATE_WEIGHTS_PATH    = os.path.join(INPUT_PATH, "iam-resnet18-weights/HandwrittenTextRecognition-Pytorch/generated/weights/Image2TextNet/Image2TextNet_fold_0_26.bin")
 WEIGHTS_PATH             = "./generated/weights/" # For PC and Kaggle
 # WEIGHTS_PATH             = "/content/drive/My Drive/weights" # For Colab
 # WEIGHTS_PATH             = "/vol/weights/" # For EC2
