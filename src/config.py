@@ -49,7 +49,7 @@ H                        = 1024 # [32, 384, 512]
 W                        = 64 # [128, 384, 512]
 C                        = 1
 
-CNN_BACKBONE             = "EfficientNetB1_NS" # [None, ResNet18, EfficientNetB0_NS, EfficientNetB1_NS]
+CNN_BACKBONE             = "ResNet18" # [None, ResNet18, EfficientNetB0_NS, EfficientNetB1_NS]
 BACKBONE_PRETRAINED      = False
 OPTIMIZER                = "Adam"  # [Adam, AdamW, RAdam, AdaBelief, RangerAdaBelief]
 SCHEDULER                = "CosineAnnealingWarmRestarts" # [ReduceLROnPlateau, CosineAnnealingLR, OneCycleLR, CosineAnnealingWarmRestarts, StepLR]
@@ -73,7 +73,7 @@ ACCUMULATE_ITERATION     = 1
 NET                      = "Image2TextNet" # ["Image2TextNet"]
    
 LEARNING_VERBOSE         = True
-VERBOSE_STEP             = 25
+VERBOSE_STEP             = 1
    
 USE_SUBSET               = False
 SUBSET_SIZE              = TRAIN_BATCH_SIZE * 1
