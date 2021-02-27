@@ -49,7 +49,7 @@ def parse_xml_file(xml_file):
 def create_df():
     forms = glob.glob(config.FORMS_PATH + "/*/*.png")
     df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
-    print(df["path", 0])
+    print(df.iloc[0, 0])
     df["image_id"] = df.apply(lambda row: row.path.split("\\")[-1].split('.')[0], axis=1)
     print(df)
     df["xml"] = df.apply(lambda row: os.path.join(config.GENERATED_FILES_PATH, "xml") + row.image_id + ".xml", axis=1)
