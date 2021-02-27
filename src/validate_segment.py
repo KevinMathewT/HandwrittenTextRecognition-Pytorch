@@ -31,6 +31,7 @@ class HandWritingFormsDataset(Dataset):
 
     def __getitem__(self, index: int):
         img = get_img(self.df.loc[index]['path']).copy()
+        print(img.shape)
         lines = segment_lines(img)
         target = self.df.loc[index]['label']
 
