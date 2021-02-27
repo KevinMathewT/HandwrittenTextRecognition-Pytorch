@@ -194,10 +194,7 @@ def test_pipeline(model, loss_fn, loader, device):
             with torch.cuda.amp.autocast():
                 image_preds = model(imgs)
                 image_preds = image_preds.permute(1, 0, 2).view(1, -1, config.N_CLASSES)
-                loss = loss_fn(image_preds, image_labels)
                 # print(image_preds.size(), loss)
-                running_loss.update(
-                    curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
                 running_string_metrics.update(
                     y_pred=image_preds.detach().cpu(),
                     y_true=image_labels,
@@ -205,10 +202,6 @@ def test_pipeline(model, loss_fn, loader, device):
 
         else:
             image_preds = model(imgs)
-            loss = loss_fn(image_preds, image_labels)
-
-            running_loss.update(
-                curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
             running_string_metrics.update(
                 y_pred=image_preds.detach().cpu(),
                 y_true=image_labels,
@@ -217,7 +210,6 @@ def test_pipeline(model, loss_fn, loader, device):
             # print("Loss Update:", running_loss.avg)
             # print("Acc Update:", running_loss.avg)
 
-        loss = running_loss.avg
         edit = running_string_metrics.avg_edit_distance
         wer = running_string_metrics.avg_wer
         mer = running_string_metrics.avg_mer
@@ -228,7 +220,7 @@ def test_pipeline(model, loss_fn, loader, device):
 
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | ED: {edit:.4f} | WER: {wer:.4f} | Time: {(time.time() - t) / 60:.2f} m'
+            description = f'[{step + 1:>4d}/{total_steps:>4d}] ED: {edit:.4f} | WER: {wer:.4f} | Time: {(time.time() - t) / 60:.2f} m'
             print(description, flush=True)
             
         if config.DEBUG_MODE: break
