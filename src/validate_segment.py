@@ -93,8 +93,7 @@ def validate_model():
     gc.collect()
 
     valid_start = time.time()
-    test_pipeline(0, 0, net, loss_fn, dataloader,
-                  device, scheduler=None, schd_loss_update=False)
+    test_pipeline(0, 0, net, loss_fn, dataloader, device)
 
     print(f'Time Taken for Validation: {time.time() - valid_start} seconds |')
     print(f"------------------------------------------------------------------------------")
