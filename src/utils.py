@@ -195,6 +195,7 @@ class StringMatchingMetrics:
 
 
 def get_one_from_batch(y_pred, y_true):
+    print(y_pred.size())
     y_pred = y_pred.permute(1, 0, 2)
     print(y_pred.size())
     print(f"len = {len(y_pred)}")
