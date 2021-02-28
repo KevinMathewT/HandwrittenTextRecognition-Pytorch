@@ -142,7 +142,7 @@ class StringMatchingMetrics:
         total_distance = 0.0
 
         for i in range(len(y_true)):
-            pred = y_pred[i].view(config.TIME_STEPS, config.N_CLASSES)
+            pred = y_pred[i].view(-1, config.N_CLASSES)
             pred = torch.argmax(pred, 1)
             s = "".join([config.ID2CHAR[id.item()] for id in pred])
             output_decoded = bestPathDecoding(s)
@@ -161,7 +161,7 @@ class StringMatchingMetrics:
         total_wil = 0.0
 
         for i in range(len(y_true)):
-            pred = y_pred[i].view(config.TIME_STEPS, config.N_CLASSES)
+            pred = y_pred[i].view(-1, config.N_CLASSES)
             pred = torch.argmax(pred, 1)
             s = "".join([config.ID2CHAR[id.item()] for id in pred])
             output_decoded = bestPathDecoding(s)
