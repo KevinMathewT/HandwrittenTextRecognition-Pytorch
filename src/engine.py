@@ -192,7 +192,7 @@ def test_pipeline(model, loss_fn, loader, device):
         if config.MIXED_PRECISION_TRAIN:
             with torch.cuda.amp.autocast():
                 image_preds = model(imgs)
-                image_preds = image_preds.permute(1, 0, 2).view(1, -1, config.N_CLASSES)
+                image_preds = image_preds.permute(1, 0, 2).reshape(1, -1, config.N_CLASSES)
                 # print(image_preds.size(), loss)
                 running_string_metrics.update(
                     y_pred=image_preds.detach().cpu(),

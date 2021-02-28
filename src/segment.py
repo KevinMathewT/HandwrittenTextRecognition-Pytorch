@@ -114,5 +114,7 @@ def segment_lines(img):
     arr_mins = np.array(mins)
 
     found_lines = crop_text_to_lines(img1, arr_mins[0])
+    for i, line in enumerate(found_lines):
+        found_lines[i] = np.transpose(line, (1, 0, 2))
 
     return found_lines
