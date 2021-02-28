@@ -31,7 +31,6 @@ class HandWritingFormsDataset(Dataset):
 
     def __getitem__(self, index: int):
         img = get_img(self.df.loc[index]['path']).copy()
-        print(img.shape)
         lines = segment_lines(img)
         target = self.df.loc[index]['label']
 
@@ -40,7 +39,6 @@ class HandWritingFormsDataset(Dataset):
                 lines[i] = self.transforms(image=line)['image']
 
         lines = torch.stack(lines)
-        print(lines.size())
 
         return lines, target
 
@@ -58,12 +56,9 @@ def create_df():
     forms = glob.glob(config.FORMS_PATH + "/*/*.png")
     df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
     df["image_id"] = df.apply(lambda row: row.path.split("/")[-1].split('.')[0], axis=1)
-    print(df)
     df["xml"] = df.apply(lambda row: os.path.join(config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
     df["label"] = df.apply(lambda row: parse_xml_file(row.xml), axis=1)
     df = df[["image_id", "path", "label", "xml"]]
-
-    print(df["label"])
     return df
 
 def get_dataloader():

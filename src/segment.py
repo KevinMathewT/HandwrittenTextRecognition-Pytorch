@@ -79,7 +79,7 @@ def crop_text_to_lines(text, blanks):
     lines = []
     for i, blank in enumerate(blanks):
         x2 = blank
-        print(f"x1 = {x1:3d}, x2 = {x2:3d}, diff = {x2 - x1:3d}")
+        # print(f"x1 = {x1:3d}, x2 = {x2:3d}, diff = {x2 - x1:3d}")
         line = text[:, x1:x2]
         lines.append(line)
         x1 = blank

@@ -1,60 +1,84 @@
+import gc
+import time
+import glob
+import pandas as pd
+from joblib import Parallel, delayed
+import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
+
 import torch
 import torch.nn as nn
 
-import timm
+from .engine import get_device, get_net, test_pipeline
+from . import config
+from .utils import *
+from .loss import get_valid_criterion
+from .transforms import get_valid_transforms
+from .utils import _clean_text
+from .segment import segment_lines
+from .validate_segment import HandWritingFormsDataset, parse_xml_file
 
+import warnings
+warnings.filterwarnings("ignore")
 
-# class GeneralizedCassavaClassifier(nn.Module):
-#     def __init__(self, model_arch, n_class=5, pretrained=False):
-#         super().__init__()
-#         self.name = model_arch
-#         self.model = timm.create_model(model_arch, pretrained=pretrained)
-#         model_list = list(self.model.children())
-#         model_list[-1] = nn.Linear(
-#             in_features=model_list[-1].in_features,
-#             out_features=n_class,
-#             bias=True
-#         )
-#         self.model = nn.Sequential(*model_list)
+def display_lines(lines_arr, orient='vertical'):
+    plt.figure(figsize=(30, 30))
+    if not orient in ['vertical', 'horizontal']:
+        raise ValueError(
+            "Orientation is on of 'vertical', 'horizontal', defaul = 'vertical'")
+    if orient == 'vertical':
+        for i, l in enumerate(lines_arr):
+            line = l
+            plt.subplot(2, 10, i+1)  # A grid of 2 rows x 10 columns
+            plt.axis('off')
+            plt.title("Line #{0}".format(i))
+            _ = plt.imshow(line, cmap='gray', interpolation='bicubic')
+            # to hide tick values on X and Y axis
+            plt.xticks([]), plt.yticks([])
+    else:
+        for i, l in enumerate(lines_arr):
+            line = l
+            plt.subplot(40, 1, i+1)  # A grid of 40 rows x 1 columns
+            plt.axis('off')
+            plt.title("Line #{0}".format(i))
+            _ = plt.imshow(line, cmap='gray', interpolation='bicubic')
+            # to hide tick values on X and Y axis
+            plt.xticks([]), plt.yticks([])
+    plt.show()
 
-#     def forward(self, x):
-#         x = self.model(x)
-#         return x
+def create_df():
+    forms = glob.glob("D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms/*.png")
+    df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
+    print(df)
+    df["image_id"] = df.apply(lambda row: row.path.split("\\")[-1].split('.')[0], axis=1)
+    print(df)
+    df["xml"] = df.apply(lambda row: os.path.join(config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
+    df["label"] = df.apply(lambda row: parse_xml_file(row.xml), axis=1)
+    df = df[["image_id", "path", "label", "xml"]]
 
+    print(df["label"])
+    return df
 
-# net = GeneralizedCassavaClassifier(model_arch="resnext50_32x4d")
+if os.path.isfile(config.FORMS_DF):
+    print(f"Loaded cached FORMS_DF from {config.FORMS_DF}")
+    df = pd.read_csv(config.FORMS_DF)
+else:
+    df = create_df()
+    df.to_csv(config.FORMS_DF, index=False)
 
-# for module in net.modules():
-#     if isinstance(module, nn.BatchNorm2d):
-#         if hasattr(module, 'weight'):
-#             print(module.weight.requires_grad)
-#         if hasattr(module, 'bias'):
-#             print(module.bias.requires_grad)
+dataset = HandWritingFormsDataset(df, transforms=get_valid_transforms())
 
-# for module in net.modules():
-#     if isinstance(module, nn.BatchNorm2d):
-#         if hasattr(module, 'weight'):
-#             module.weight.requires_grad_(False)
-#         if hasattr(module, 'bias'):
-#             module.bias.requires_grad_(False)
-#         module.eval()
+# lines = []
+# for line in dataset[0][0]:
+#     lines.append(cv2.cvtColor(line.permute(1, 2, 0).numpy(), cv2.COLOR_RGB2GRAY))
+#     print(cv2.cvtColor(line.permute(1, 2, 0).numpy(), cv2.COLOR_RGB2GRAY).shape)
 
-# for module in net.modules():
-#     if isinstance(module, nn.BatchNorm2d):
-#         if hasattr(module, 'weight'):
-#             print(module.weight.requires_grad)
-#         if hasattr(module, 'bias'):
-#             print(module.bias.requires_grad)
+# display_lines(lines)
 
-# net.train()
-
-# for module in net.modules():
-#     if isinstance(module, nn.BatchNorm2d):
-#         if hasattr(module, 'weight'):
-#             print(module.weight.requires_grad)
-#         if hasattr(module, 'bias'):
-#             print(module.bias.requires_grad)
-
-# print(timm.list_models())
-net = timm.create_model("tf_efficientnet_b4_ns", pretrained=False)
-print(net)
+print(dataset[0][0][0].permute(1, 2, 0).size())
+plt.imshow(dataset[0][0][0].permute(1, 2, 0).numpy() / 256)
+plt.show()
+img = get_img("D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms\\a01-000u.png")
+print(img.shape)
+plt.imshow(img)
+plt.show()
