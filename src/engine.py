@@ -193,7 +193,7 @@ def test_pipeline(model, loss_fn, loader, device):
             with torch.cuda.amp.autocast():
                 image_preds = model(imgs)
                 print(image_preds.size())
-                image_preds = image_preds.permute(1, 0, 2).reshape(1, -1, config.N_CLASSES)
+                image_preds = image_preds.permute(1, 0, 2).reshape(1, -1, config.N_CLASSES).permute(1, 0, 2)
                 print(image_preds.size())
                 running_string_metrics.update(
                     y_pred=image_preds.detach().cpu(),
@@ -202,7 +202,7 @@ def test_pipeline(model, loss_fn, loader, device):
 
         else:
             image_preds = model(imgs)
-            image_preds = image_preds.permute(1, 0, 2).reshape(1, -1, config.N_CLASSES)
+            image_preds = image_preds.permute(1, 0, 2).reshape(1, -1, config.N_CLASSES).permute(1, 0, 2)
             running_string_metrics.update(
                 y_pred=image_preds.detach().cpu(),
                 y_true=image_labels,
