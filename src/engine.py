@@ -201,6 +201,7 @@ def test_pipeline(model, loss_fn, loader, device):
 
         else:
             image_preds = model(imgs)
+            image_preds = image_preds.permute(1, 0, 2).reshape(1, -1, config.N_CLASSES)
             running_string_metrics.update(
                 y_pred=image_preds.detach().cpu(),
                 y_true=image_labels,

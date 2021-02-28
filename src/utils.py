@@ -196,6 +196,7 @@ class StringMatchingMetrics:
 
 def get_one_from_batch(y_pred, y_true):
     y_pred = y_pred.permute(1, 0, 2)
+    print(y_pred.size())
     print(f"len = {len(y_pred)}")
     i = random.randint(0, len(y_pred) - 1)
     print(f"i = {i}")
