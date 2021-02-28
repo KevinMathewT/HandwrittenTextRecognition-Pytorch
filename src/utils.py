@@ -197,6 +197,7 @@ class StringMatchingMetrics:
 def get_one_from_batch(y_pred, y_true):
     y_pred = y_pred.permute(1, 0, 2)
     i = random.randint(0, len(y_pred) - 1)
+    print(i)
     pred = torch.argmax(y_pred[i], 1)
     s = "".join([config.ID2CHAR[id.item()] for id in pred])
     s = bestPathDecoding(s)
