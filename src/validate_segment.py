@@ -35,11 +35,15 @@ class HandWritingFormsDataset(Dataset):
               self.df.loc[index]['x2'], self.df.loc[index]['y2']]
         img = img[bb[1]:bb[3], bb[0]:bb[2], :]
         lines = segment_lines(img)
+        lines = [line for line in lines if line.shape[0] > 0 and line.shape[1] > 0 and line.shape[2] > 0]
         target = self.df.loc[index]['label']
 
         if self.transforms:
             for i, line in enumerate(lines):
                 lines[i] = self.transforms(image=line)['image']
+        else:
+            for i, line in enumerate(lines):
+                lines[i] = torch.tensor(line)
 
         lines = torch.stack(lines)
 
@@ -74,23 +78,29 @@ def _get_bb_of_item(xml_file):
 
 
 def create_df():
-    forms = glob.glob(config.FORMS_PATH + "/*/*.png") # Kaggle
-    # forms = glob.glob(config.FORMS_PATH + "\*.png")  # PC
-    df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
-    df["image_id"] = df.apply(
-        lambda row: row.path.split("/")[-1].split('.')[0], axis=1)
-    df["xml"] = df.apply(lambda row: os.path.join(
-        config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
-    df["label"] = df.apply(lambda row: _parse_xml_file(row.xml), axis=1)
-    # df[["x1", "x2", "y1", "y2"]] = df.apply(lambda row: _get_bb_of_item(row.xml), axis=1)
-    bb = np.array(df.apply(lambda row: _get_bb_of_item(
-        row.xml), axis=1).values.tolist())
-    bb = pd.DataFrame(bb, columns=["x1", "y1", "x2", "y2"])
-    print(bb)
-    print(bb.shape)
-    df = pd.concat([df, bb], axis=1)
-    df = df[["image_id", "path", "label", "xml", "x1", "y1", "x2", "y2"]]
-    print(df)
+    if os.path.isfile(config.FORMS_DF):
+        print(f"Loaded cached FORMS_DF from {config.FORMS_DF}")
+        df = pd.read_csv(config.FORMS_DF)
+    else:
+        forms = glob.glob(config.FORMS_PATH + "/*/*.png") # Kaggle
+        # forms = glob.glob(config.FORMS_PATH + "\*.png")  # PC
+        df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
+        df["path"] = df.apply(lambda row: row.replace())
+        df["image_id"] = df.apply(
+            lambda row: row.path.split("/")[-1].split('.')[0], axis=1)
+        df["xml"] = df.apply(lambda row: os.path.join(
+            config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
+        df["label"] = df.apply(lambda row: _parse_xml_file(row.xml), axis=1)
+        # df[["x1", "x2", "y1", "y2"]] = df.apply(lambda row: _get_bb_of_item(row.xml), axis=1)
+        bb = np.array(df.apply(lambda row: _get_bb_of_item(
+            row.xml), axis=1).values.tolist())
+        bb = pd.DataFrame(bb, columns=["x1", "y1", "x2", "y2"])
+        print(bb)
+        print(bb.shape)
+        df = pd.concat([df, bb], axis=1)
+        df = df[["image_id", "path", "label", "xml", "x1", "y1", "x2", "y2"]]
+        print(df)
+        df.to_csv(config.FORMS_DF, index=False)
     return df
 
 
