@@ -16,10 +16,11 @@ from .loss import get_valid_criterion
 from .transforms import get_valid_transforms
 from .utils import _clean_text
 from .segment import segment_lines
-from .validate_segment import HandWritingFormsDataset, parse_xml_file
+from .validate_segment import HandWritingFormsDataset, _parse_xml_file, create_df
 
 import warnings
 warnings.filterwarnings("ignore")
+
 
 def display_lines(lines_arr, orient='vertical'):
     plt.figure(figsize=(30, 30))
@@ -46,20 +47,8 @@ def display_lines(lines_arr, orient='vertical'):
             plt.xticks([]), plt.yticks([])
     plt.show()
 
-def create_df():
-    forms = glob.glob("D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms/*.png")
-    df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
-    print(df)
-    df["image_id"] = df.apply(lambda row: row.path.split("\\")[-1].split('.')[0], axis=1)
-    print(df)
-    df["xml"] = df.apply(lambda row: os.path.join(config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
-    df["label"] = df.apply(lambda row: parse_xml_file(row.xml), axis=1)
-    df = df[["image_id", "path", "label", "xml"]]
 
-    print(df["label"])
-    return df
-
-if os.path.isfile(config.FORMS_DF):
+if os.path.isfile(config.FORMS_DF) and False:
     print(f"Loaded cached FORMS_DF from {config.FORMS_DF}")
     df = pd.read_csv(config.FORMS_DF)
 else:
@@ -75,10 +64,13 @@ dataset = HandWritingFormsDataset(df, transforms=get_valid_transforms())
 
 # display_lines(lines)
 
-print(dataset[0][0][0].permute(1, 2, 0).size())
-plt.imshow(dataset[0][0][0].permute(1, 2, 0).numpy() / 256)
-plt.show()
-img = get_img("D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms\\a01-000u.png")
+for i in range(len(dataset[0][0])):
+    plt.imshow(np.transpose(
+        dataset[0][0][i].cpu().detach().numpy(), (1, 2, 0)))
+    plt.show()
+img = get_img(
+    "D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms\\a01-000u.png")
 print(img.shape)
 plt.imshow(img)
+print(img)
 plt.show()
