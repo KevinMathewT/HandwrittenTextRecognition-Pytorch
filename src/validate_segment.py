@@ -74,8 +74,8 @@ def _get_bb_of_item(xml_file):
 
 
 def create_df():
-    # forms = glob.glob(config.FORMS_PATH + "/*/*.png") # Kaggle
-    forms = glob.glob(config.FORMS_PATH + "\*.png")  # PC
+    forms = glob.glob(config.FORMS_PATH + "/*/*.png") # Kaggle
+    # forms = glob.glob(config.FORMS_PATH + "\*.png")  # PC
     df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
     df["image_id"] = df.apply(
         lambda row: row.path.split("\\")[-1].split('.')[0], axis=1)
