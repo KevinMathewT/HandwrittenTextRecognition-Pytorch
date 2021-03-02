@@ -78,7 +78,7 @@ def _get_bb_of_item(xml_file):
 
 
 def create_df():
-    if os.path.isfile(config.FORMS_DF):
+    if os.path.isfile(config.FORMS_DF) and False:
         print(f"Loaded cached FORMS_DF from {config.FORMS_DF}")
         df = pd.read_csv(config.FORMS_DF)
     else:
