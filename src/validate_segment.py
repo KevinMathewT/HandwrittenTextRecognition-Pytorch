@@ -101,6 +101,7 @@ def create_df():
         df = df[["image_id", "path", "label", "xml", "x1", "y1", "x2", "y2"]]
         print(df)
         df.to_csv(config.FORMS_DF, index=False)
+        print(f"FORMS_DF cached at {config.FORMS_DF}")
     return df
 
 
