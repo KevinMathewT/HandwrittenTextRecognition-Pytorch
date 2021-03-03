@@ -129,6 +129,7 @@ def validate_model():
     print(f"Training Batch Size:         {config.TRAIN_BATCH_SIZE}")
     print(f"Validation Batch Size:       {config.VALID_BATCH_SIZE}")
     print(f"Accumulate Iteration:        {config.ACCUMULATE_ITERATION}")
+    print(f"CTC Decoder:                 {config.DECODER}")
 
     dataloader = get_dataloader()
     device = get_device(n=0)

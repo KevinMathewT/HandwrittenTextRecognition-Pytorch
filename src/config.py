@@ -36,7 +36,7 @@ MAX_LEN_ALLOWED          = 70
 THRESHOLD                = 0
 TIME_STEPS               = 256
 RNN_INPUT_SIZE           = 512
-DECODER                  = "BestPathDecoder" # ["BestPathDecoder", "BeamSearchDecoder"]
+DECODER                  = "BeamSearchDecoder" # ["BestPathDecoder", "BeamSearchDecoder"]
    
 USE_GPU                  = True # [True, False]
 GPUS                     = 1

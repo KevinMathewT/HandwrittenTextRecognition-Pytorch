@@ -27,6 +27,7 @@ def run_fold(fold):
     print(f"Training Batch Size:         {config.TRAIN_BATCH_SIZE}")
     print(f"Validation Batch Size:       {config.VALID_BATCH_SIZE}")
     print(f"Accumulate Iteration:        {config.ACCUMULATE_ITERATION}")
+    print(f"CTC Decoder:                 {config.DECODER}")
 
     global net
     train_loader, valid_loader = get_loaders(fold)

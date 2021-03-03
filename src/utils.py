@@ -19,7 +19,7 @@ import jiwer
 
 if config.DECODER == "BestPathDecoder":
     decoding_fn = bestPathDecoder
-elif config.DECODER == "BestPathDecoder":
+elif config.DECODER == "BeamSearchDecoder":
     decoding_fn = beamSearchDecoder
 
 

@@ -217,6 +217,11 @@ def test_pipeline(model, loss_fn, loader, device):
         preds.append(pred)
         trues.append(true)
 
+        if ((step + 1) % 5 == 0):
+            print(f"------------------------------------------------------------------------------")
+            print(f"Predicted: {pred}")
+            print(f"Expected:  {true}")
+            print(f"------------------------------------------------------------------------------")
 
         if ((config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0)) or ((step + 1) == total_steps) or ((step + 1) == 1):
             description = f'[{step + 1:>4d}/{total_steps:>4d}] ED: {edit:.4f} | WER: {wer:.4f} | Time: {(time.time() - t) / 60:.2f} m'
