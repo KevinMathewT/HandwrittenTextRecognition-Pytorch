@@ -12,9 +12,15 @@ from torch.utils.data import DataLoader, Dataset
 
 from . import config
 from .transforms import *
+from .decoder import bestPathDecoder, beamSearchDecoder
 
 import editdistance
 import jiwer
+
+if config.DECODER == "BestPathDecoder":
+    decoding_fn = bestPathDecoder
+elif config.DECODER == "BestPathDecoder":
+    decoding_fn = beamSearchDecoder
 
 
 def get_img(path):
@@ -28,22 +34,6 @@ def stringToClasses(x):
         [config.CHAR2ID[character] for character in x],
         dtype=torch.long
     )
-
-
-def bestPathDecoding(x):
-    if len(x) == 0:
-        return x
-
-    ret = ""
-    ret += x[0]
-
-    for i in range(1, len(x)):
-        if x[i] != ret[-1]:
-            ret += x[i]
-
-    ret = ret.replace("~", "")
-
-    return ret
 
 
 def _clean_text(text):
@@ -143,9 +133,7 @@ class StringMatchingMetrics:
 
         for i in range(len(y_true)):
             pred = y_pred[i].view(-1, config.N_CLASSES)
-            pred = torch.argmax(pred, 1)
-            s = "".join([config.ID2CHAR[id.item()] for id in pred])
-            output_decoded = bestPathDecoding(s)
+            output_decoded = decoding_fn(pred.detach().cpu().numpy())
             distance = editdistance.eval(output_decoded, y_true[i])
             # print(output_decoded, y_true[i], distance)
             total_distance += distance
@@ -162,9 +150,7 @@ class StringMatchingMetrics:
 
         for i in range(len(y_true)):
             pred = y_pred[i].view(-1, config.N_CLASSES)
-            pred = torch.argmax(pred, 1)
-            s = "".join([config.ID2CHAR[id.item()] for id in pred])
-            output_decoded = bestPathDecoding(s)
+            output_decoded = decoding_fn(pred.detach().cpu().numpy())
             error = jiwer.compute_measures(y_true[i], output_decoded)
             # print(output_decoded, y_true[i], distance)
             total_wer += error['wer']
@@ -197,9 +183,7 @@ class StringMatchingMetrics:
 def get_one_from_batch(y_pred, y_true):
     y_pred = y_pred.permute(1, 0, 2)
     i = random.randint(0, len(y_pred) - 1)
-    pred = torch.argmax(y_pred[i], 1)
-    s = "".join([config.ID2CHAR[id.item()] for id in pred])
-    s = bestPathDecoding(s)
+    s = decoding_fn(y_pred[i].detach().cpu().numpy())
     return s, y_true[i]
 
 
