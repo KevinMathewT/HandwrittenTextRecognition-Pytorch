@@ -78,7 +78,7 @@ def _get_bb_of_item(xml_file):
 
 
 def create_df():
-    if os.path.isfile(config.FORMS_DF) and False:
+    if os.path.isfile(config.FORMS_DF):
         print(f"Loaded cached FORMS_DF from {config.FORMS_DF}")
         df = pd.read_csv(config.FORMS_DF)
     else:
@@ -95,11 +95,8 @@ def create_df():
         bb = np.array(df.apply(lambda row: _get_bb_of_item(
             row.xml), axis=1).values.tolist())
         bb = pd.DataFrame(bb, columns=["x1", "y1", "x2", "y2"])
-        print(bb)
-        print(bb.shape)
         df = pd.concat([df, bb], axis=1)
         df = df[["image_id", "path", "label", "xml", "x1", "y1", "x2", "y2"]]
-        print(df)
         df.to_csv(config.FORMS_DF, index=False)
         print(f"FORMS_DF cached at {config.FORMS_DF}")
     return df
