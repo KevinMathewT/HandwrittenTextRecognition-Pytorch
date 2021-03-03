@@ -1,5 +1,4 @@
 from __future__ import division
-from __future__ import print_function
 
 import numpy as np
 
@@ -54,7 +53,7 @@ def addBeam(beamState, labeling):
 def ctcBeamSearch(mat, classes, lm, beamWidth=25):
 	"beam search as described by the paper of Hwang et al. and the paper of Graves et al."
 
-	blankIdx = len(classes)
+	blankIdx = 0
 	maxT, maxC = mat.shape
 
 	# initialise beam state
