@@ -66,7 +66,7 @@ MAX_EPOCHS               = 45
 SCHEDULER_BATCH_STEP     = True # [True, False]
 
 # ~ is the blank character
-N_CLASSES                = len(CLASSES) # 1 for blank for CTC
+N_CLASSES                = len(CLASSES) + 1 # 1 for blank for CTC
 
 TRAIN_BATCH_SIZE         = 32
 VALID_BATCH_SIZE         = 32
