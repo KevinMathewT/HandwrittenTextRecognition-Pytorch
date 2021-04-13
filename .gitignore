@@ -148,3 +148,5 @@ wandb/
 
 *.pem
 tb_logs/
+
+vswhere.exe

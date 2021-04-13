@@ -1,18 +1,13 @@
 import gc
 import time
-from joblib import Parallel, delayed
-
-import torch
-import torch.nn as nn
+import warnings
 
 from .dataset import get_loaders
-from .optim import get_optimizer_and_scheduler
 from .engine import get_device, get_net, train_one_epoch, valid_one_epoch
-from . import config
-from .utils import *
 from .loss import get_train_criterion, get_valid_criterion
+from .optim import get_optimizer_and_scheduler
+from .utils import *
 
-import warnings
 warnings.filterwarnings("ignore")
 
 
@@ -31,7 +26,7 @@ def run_fold(fold):
 
     global net
     train_loader, valid_loader = get_loaders(fold)
-    device = get_device(n=fold+1)
+    device = get_device(n=0)
     net = net.to(device)
     scaler = torch.cuda.amp.GradScaler() if config.MIXED_PRECISION_TRAIN else None
     loss_tr = get_train_criterion(device=device)
@@ -58,7 +53,7 @@ def run_fold(fold):
         torch.save(net.state_dict(), os.path.join(config.WEIGHTS_PATH,
                                                   f'{config.NET}/{config.NET}_fold_{fold}_{epoch}.bin'))
 
-    #torch.save(model.cnn_model.state_dict(),'{}/cnn_model_fold_{}_{}'.format(CFG['model_path'], fold, CFG['tag']))
+    # torch.save(model.cnn_model.state_dict(),'{}/cnn_model_fold_{}_{}'.format(CFG['model_path'], fold, CFG['tag']))
     del net, optimizer, train_loader, valid_loader, scheduler
     torch.cuda.empty_cache()
     print(f"------------------------------------------------------------------------------")

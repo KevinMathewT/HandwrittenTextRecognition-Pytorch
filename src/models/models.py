@@ -4,7 +4,6 @@ import torchvision
 
 import timm
 from timm.models.layers.conv2d_same import Conv2dSame
-from vision_transformer_pytorch import VisionTransformer
 
 from collections import OrderedDict
 
@@ -55,6 +54,7 @@ def getCNNBackbone():
             672, 672, kernel_size=(5, 5), stride=(1, 1), groups=672, bias=False)
         return effnet_b1
 
+
 class Image2TextRecurrentNet(nn.Module):
     def __init__(self):
         super().__init__()
@@ -86,6 +86,7 @@ class Image2TextRecurrentNet(nn.Module):
         log_probs = nn.LogSoftmax(dim=1)(reduced).view(t, b, config.N_CLASSES)
 
         return log_probs
+
 
 class Image2TextNet(nn.Module):
     def __init__(self):

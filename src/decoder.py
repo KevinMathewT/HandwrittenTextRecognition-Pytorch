@@ -136,20 +136,22 @@ def beamSearchDecoder(pred):
     classes = "".join(config.CLASSES)
     return ctcBeamSearch(pred, classes, None)
 
+def _best_path_decoder(x):
+	if len(x) == 0:
+		return x
+
+	ret = ""
+	ret += x[0]
+
+	for i in range(1, len(x)):
+		if x[i] != ret[-1]:
+			ret += x[i]
+
+	ret = ret.replace("~", "")
+	return ret
+
 def bestPathDecoder(pred):
-    pred = np.argmax(pred, 1)
-    x = "".join([config.ID2CHAR[id.item()] for id in pred])
-
-    if len(x) == 0:
-        return x
-
-    ret = ""
-    ret += x[0]
-
-    for i in range(1, len(x)):
-        if x[i] != ret[-1]:
-            ret += x[i]
-
-    ret = ret.replace("~", "")
-
-    return ret
+	pred = np.argmax(pred, 1)
+	x = "".join([config.ID2CHAR[id.item()] for id in pred])
+	
+	return _best_path_decoder(x)

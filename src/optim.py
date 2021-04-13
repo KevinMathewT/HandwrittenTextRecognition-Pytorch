@@ -4,8 +4,6 @@ import torch
 from torch import optim
 from torch.optim.optimizer import Optimizer
 
-from adabelief_pytorch import AdaBelief
-from ranger_adabelief import RangerAdaBelief
 from warmup_scheduler import GradualWarmupScheduler
 
 from . import config
@@ -133,12 +131,6 @@ def get_optimizer_and_scheduler(net, dataloader):
     elif config.OPTIMIZER == "AdamW":
         optimizer = optim.AdamW(
             net.parameters(), lr=config.LEARNING_RATE * m, weight_decay=0.001)
-    elif config.OPTIMIZER == "AdaBelief":
-        optimizer = AdaBelief(net.parameters(
-        ), lr=config.LEARNING_RATE * m, eps=1e-16, betas=(0.9, 0.999), weight_decouple=True, rectify=False, print_change_log=False)
-    elif config.OPTIMIZER == "RangerAdaBelief":
-        optimizer = RangerAdaBelief(
-            net.parameters(), lr=config.LEARNING_RATE * m, eps=1e-12, betas=(0.9, 0.999), print_change_log=False)
     elif config.OPTIMIZER == "RAdam":
         optimizer = RAdam(
             net.parameters(),
@@ -185,7 +177,7 @@ def get_optimizer_and_scheduler(net, dataloader):
 
     print(f"Gradual Warmup:              {config.SCHEDULER_WARMUP}")
     if config.SCHEDULER_WARMUP:
-        scheduler = scheduler = GradualWarmupSchedulerV2(
+        scheduler = GradualWarmupSchedulerV2(
             optimizer, multiplier=config.WARMUP_FACTOR, total_epoch=config.WARMUP_EPOCHS, after_scheduler=scheduler)
 
     return optimizer, scheduler

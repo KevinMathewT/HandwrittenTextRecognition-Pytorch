@@ -131,7 +131,6 @@ def validate_model():
     dataloader = get_dataloader()
     device = get_device(n=0)
     net = net.to(device)
-    scaler = torch.cuda.amp.GradScaler() if config.MIXED_PRECISION_TRAIN else None
     loss_fn = get_valid_criterion(device=device)
 
     gc.collect()

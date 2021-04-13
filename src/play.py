@@ -24,7 +24,7 @@ warnings.filterwarnings("ignore")
 
 def display_lines(lines_arr, orient='vertical'):
     plt.figure(figsize=(30, 30))
-    if not orient in ['vertical', 'horizontal']:
+    if orient not in ['vertical', 'horizontal']:
         raise ValueError(
             "Orientation is on of 'vertical', 'horizontal', defaul = 'vertical'")
     if orient == 'vertical':
@@ -55,7 +55,13 @@ else:
     df = create_df()
     df.to_csv(config.FORMS_DF, index=False)
 
-dataset = HandWritingFormsDataset(df, transforms=get_valid_transforms())
+dataset = HandWritingFormsDataset(df, transforms=get_valid_transforms())[:1]
+dataloader = DataLoader(
+        dataset,
+        batch_size=config.VALID_SEGMENT_BATCH_SIZE,
+        drop_last=config.DROP_LAST,
+        num_workers=config.CPU_WORKERS,
+        shuffle=False)
 
 # lines = []
 # for line in dataset[0][0]:
@@ -64,13 +70,25 @@ dataset = HandWritingFormsDataset(df, transforms=get_valid_transforms())
 
 # display_lines(lines)
 
-for i in range(len(dataset[0][0])):
-    plt.imshow(np.transpose(
-        dataset[0][0][i].cpu().detach().numpy(), (1, 2, 0)))
-    plt.show()
-img = get_img(
-    "D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms\\a01-000u.png")
-print(img.shape)
-plt.imshow(img)
-print(img)
-plt.show()
+# print(len(dataset))
+# print(len(dataset[0]))
+# print(dataset[0][1])
+# print(len(dataset[0][0]))
+
+# for i in range(len(dataset[0][0])):
+#     plt.imshow(np.transpose(
+#         dataset[0][0][i].cpu().detach().numpy(), (1, 2, 0)))
+#     plt.show()
+# img = get_img("D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms\\a01-000u.png")
+# print(img.shape)
+# plt.imshow(img)
+# print(img)
+# plt.show()
+
+net = get_net(name=config.NET)
+img = dataset[0][0]
+print(img.size())
+print(net(img).size())
+
+test_pipeline(net, None, dataloader, get_device(n=0))
+

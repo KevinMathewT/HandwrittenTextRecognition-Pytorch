@@ -1,14 +1,13 @@
-import os
 import pandas as pd
 
-import torch
-from torch.utils.data import DataLoader, Dataset
+import torchvision
+
+from .transforms import *
+from .utils import *
+
 
 # from fmix import sample_mask, make_low_freq_image, binarise_mask
 
-from . import config
-from .utils import *
-from .transforms import *
 
 def get_img(path):
     im_bgr = cv2.imread(path)
@@ -34,8 +33,6 @@ class HandWritingLinesDataset(Dataset):
 
         return img, target
 
-import torchvision
-import matplotlib.pyplot as plt
 
 def get_train_dataloader(train):
     train_dataset = HandWritingLinesDataset(train, transforms=get_train_transforms())

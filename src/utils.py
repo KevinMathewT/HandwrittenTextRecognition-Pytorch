@@ -115,17 +115,25 @@ class StringMatchingMetrics:
         self.wil = 0
 
     def update(self, y_pred, y_true, batch_size=1):
-        self.batch_size = batch_size
-        self.count += self.batch_size
+        self.count += batch_size
         total_ed = self.get_total_edit_distance(y_pred, y_true)
-        total_wer, total_mer, total_wil = self.get_total_error_rates(
-            y_pred, y_true)
+        total_wer, total_mer, total_wil = self.get_total_error_rates(y_pred, y_true)
         self.ed += total_ed
         self.wer += total_wer
         self.mer += total_mer
         self.wil += total_wil
 
-    def get_total_edit_distance(self, y_pred, y_true):
+    def update_with_strings(self, y_pred, y_true, batch_size=1):
+        self.count += batch_size
+        total_ed = self.get_total_edit_distance_with_strings(y_pred, y_true)
+        total_wer, total_mer, total_wil = self.get_total_error_rates_with_strings(y_pred, y_true)
+        self.ed += total_ed
+        self.wer += total_wer
+        self.mer += total_mer
+        self.wil += total_wil
+
+    @staticmethod
+    def get_total_edit_distance(y_pred, y_true):
         # print(y_pred.size(), len(y_true))
 
         y_pred = y_pred.permute(1, 0, 2)
@@ -140,7 +148,8 @@ class StringMatchingMetrics:
 
         return total_distance
 
-    def get_total_error_rates(self, y_pred, y_true):
+    @staticmethod
+    def get_total_error_rates(y_pred, y_true):
         # print(y_pred.size(), len(y_true))
 
         y_pred = y_pred.permute(1, 0, 2)
@@ -153,6 +162,30 @@ class StringMatchingMetrics:
             output_decoded = decoding_fn(pred.detach().cpu().numpy())
             error = jiwer.compute_measures(y_true[i], output_decoded)
             # print(output_decoded, y_true[i], distance)
+            total_wer += error['wer']
+            total_mer += error['mer']
+            total_wil += error['wil']
+
+        return total_wer, total_mer, total_wil
+
+    @staticmethod
+    def get_total_edit_distance_with_strings(y_pred, y_true):
+        total_distance = 0.0
+
+        for i in range(len(y_true)):
+            distance = editdistance.eval(y_pred[i], y_true[i])
+            total_distance += distance
+
+        return total_distance
+
+    @staticmethod
+    def get_total_error_rates_with_strings(y_pred, y_true):
+        total_wer = 0.0
+        total_mer = 0.0
+        total_wil = 0.0
+
+        for i in range(len(y_true)):
+            error = jiwer.compute_measures(y_true[i], y_pred[i])
             total_wer += error['wer']
             total_mer += error['mer']
             total_wil += error['wil']
