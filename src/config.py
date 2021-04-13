@@ -13,12 +13,12 @@ DEBUG_MODE               = False
    
 TRAINED_WEIGHTS_PATH     = ""
    
-INPUT_PATH               = "./input/"  # PC and EC2
-# INPUT_PATH               = "../../input" # Kaggle
+# INPUT_PATH               = "./input/"  # PC and EC2
+INPUT_PATH               = "../../input" # Kaggle
 # INPUT_PATH               = "."        # Colab
 GENERATED_FILES_PATH     = "./generated/"
-FORMS_PATH               = os.path.join("D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms") # PC
-# FORMS_PATH               = os.path.join(INPUT_PATH, "iam-handwritten-forms-dataset/data") # Kaggle
+# FORMS_PATH               = os.path.join("D:\Kevin\Machine Learning\IAM Dataset Full\original\\forms") # PC
+FORMS_PATH               = os.path.join(INPUT_PATH, "iam-handwritten-forms-dataset/data") # Kaggle
 DATASET_PATH             = os.path.join(INPUT_PATH, "iam-dataset-modified/upload")
 TRAIN_IMAGES_DIR_1       = os.path.join(DATASET_PATH, "train")
 TRAIN_IMAGES_DIR_2       = os.path.join(DATASET_PATH, "val")
