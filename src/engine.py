@@ -1,7 +1,4 @@
 import time
-import random
-
-import editdistance
 
 from .decoder import bestPathDecoder, beamSearchDecoder
 from .models.models import *
@@ -182,8 +179,9 @@ def test_pipeline(model, loss_fn, loader, device):
 
         for i in range(y_pred.size(0)):
             pred = y_pred[i].view(-1, config.N_CLASSES)
-            output_decoded = decoding_fn(pred.detach().cpu().numpy())
-            print("Output Decoded #", i, ": ", output_decoded, sep="")
+            output_decoded = decoding_fn(pred.detach().cpu().numpy()).strip()
+            if config.VALIDATION_DEBUG:
+                print("Output Decoded #", i, ": ", output_decoded, sep="")
             full_output_decoded += " " + output_decoded
 
         running_string_metrics.update_with_strings(

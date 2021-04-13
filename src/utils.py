@@ -24,9 +24,9 @@ elif config.DECODER == "BeamSearchDecoder":
 
 
 def get_img(path):
-    print(path)
     im_bgr = cv2.imread(path, cv2.IMREAD_COLOR)
-    print(im_bgr.shape)
+    if im_bgr is None:
+        raise ValueError(f"Image not found at path: {path}")
     im_rgb = cv2.cvtColor(im_bgr, cv2.COLOR_BGR2RGB)
     return im_rgb
 

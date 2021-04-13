@@ -1,22 +1,18 @@
 import gc
-import time
 import glob
-import pandas as pd
-from joblib import Parallel, delayed
+import time
+import warnings
 import xml.etree.ElementTree as ET
 
-import torch
-import torch.nn as nn
+import pandas as pd
 
 from .engine import get_device, get_net, test_pipeline
-from . import config
-from .utils import *
 from .loss import get_valid_criterion
-from .transforms import get_valid_transforms
-from .utils import _clean_text
 from .segment import segment_lines
+from .transforms import get_valid_transforms
+from .utils import *
+from .utils import _clean_text
 
-import warnings
 warnings.filterwarnings("ignore")
 
 
@@ -30,6 +26,8 @@ class HandWritingFormsDataset(Dataset):
         return self.df.shape[0]
 
     def __getitem__(self, index: int):
+        if config.VALIDATION_DEBUG:
+            print(f"Running for Image ID: {self.df.loc[index]['image_id']}")
         img = get_img(self.df.loc[index]['path']).copy()
         bb = [self.df.loc[index]['x1'], self.df.loc[index]['y1'],
               self.df.loc[index]['x2'], self.df.loc[index]['y2']]
@@ -78,7 +76,7 @@ def _get_bb_of_item(xml_file):
 
 
 def create_df():
-    if os.path.isfile(config.FORMS_DF) and False:
+    if os.path.isfile(config.FORMS_DF):
         print(f"Loaded cached FORMS_DF from {config.FORMS_DF}")
         df = pd.read_csv(config.FORMS_DF)
     else:
