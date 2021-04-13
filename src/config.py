@@ -77,7 +77,7 @@ NET                      = "Image2TextNet" # ["Image2TextNet"]
    
 LEARNING_VERBOSE         = True
 VERBOSE_STEP             = 1
-VALIDATION_DEBUG         = True
+VALIDATION_DEBUG         = False
 USE_SUBSET               = False
 SUBSET_SIZE              = TRAIN_BATCH_SIZE * 1
 CPU_WORKERS              = 0
