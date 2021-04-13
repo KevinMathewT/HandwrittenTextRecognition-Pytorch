@@ -146,6 +146,7 @@ generated/weights/
 generated/links.txt
 wandb/
 generated/forms.csv
+.idea/
 
 *.pem
 tb_logs/
