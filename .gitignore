@@ -145,6 +145,7 @@ src/models/*/
 generated/weights/
 generated/links.txt
 wandb/
+generated/forms.csv
 
 *.pem
 tb_logs/
