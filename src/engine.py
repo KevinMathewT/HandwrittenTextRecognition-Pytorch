@@ -214,6 +214,7 @@ def test_pipeline(model, loss_fn, loader, device):
     for pred, true in zip(preds, trues):
         print(f"------------------------------------------------------------------------------")
         print(f"Predicted: {pred}")
+        print(f"------------------------------------------------------------------------------")
         print(f"Expected:  {true}")
         c += 1
         if c >= 5:
