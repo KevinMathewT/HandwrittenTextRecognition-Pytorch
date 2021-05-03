@@ -52,7 +52,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
     total_steps = len(valid_loader)
 
     with torch.no_grad():
-        for step, (images, targets, image_ids) in enumerate(valid_loader):
+        for step, (images, targets) in enumerate(valid_loader):
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
