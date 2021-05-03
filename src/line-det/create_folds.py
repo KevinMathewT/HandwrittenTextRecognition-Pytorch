@@ -94,8 +94,8 @@ def create_df():
             lambda row: row.path.split("\\")[-1].split('.')[0], axis=1)
         df["xml"] = df.apply(lambda row:
                              # os.path.join(config.GENERATED_FILES_PATH, "xml") +
-                             "/" +
-                             row.image_id +
+                             # "/" +
+                             # row.image_id +
                              ".xml", axis=1)
         df["label"] = df.apply(lambda row: _parse_xml_file(row.xml), axis=1)
         # df[["x1", "x2", "y1", "y2"]] = df.apply(lambda row: _get_bb_of_item(row.xml), axis=1)
