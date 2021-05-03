@@ -97,7 +97,7 @@ def get_valid_dataloader(valid):
 
 
 def get_loaders(fold):
-    train_folds = pd.read_csv(config.TRAIN_FOLDS)
+    train_folds = pd.read_csv(config.FORMS_DF)
     train = train_folds[train_folds.fold != fold]
     valid = train_folds[train_folds.fold == fold]
 
