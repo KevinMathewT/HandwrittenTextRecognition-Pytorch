@@ -13,7 +13,7 @@ def get_train_criterion(device):
         "BipartiteMatchingLoss": SetCriterion(det_config.NUM_CLASSES - 1, matcher, weight_dict, eos_coef=det_config.NULL_CLASS_COEF, losses=losses),
     }
 
-    return loss_map[config.VALID_CRITERION]
+    return loss_map[det_config.TRAIN_CRITERION]
 
 
 def get_valid_criterion(device):
@@ -23,4 +23,4 @@ def get_valid_criterion(device):
         "BipartiteMatchingLoss": SetCriterion(det_config.NUM_CLASSES - 1, matcher, weight_dict, eos_coef=det_config.NULL_CLASS_COEF, losses=losses),
     }
 
-    return loss_map[config.VALID_CRITERION]
+    return loss_map[det_config.VALID_CRITERION]
