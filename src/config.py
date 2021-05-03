@@ -62,7 +62,7 @@ WARMUP_FACTOR            = 7 if SCHEDULER_WARMUP else 1
 TRAIN_CRITERION          = "CTCLoss" # [BiTemperedLogisticLoss, LabelSmoothingCrossEntropy, SoftmaxCrossEntropy, FocalCosineLoss, SmoothCrossEntropyLoss, TaylorCrossEntropyLoss, RandomChoice]
 VALID_CRITERION          = "CTCLoss" # [BiTemperedLogisticLoss, SoftmaxCrossEntropy, FocalCosineLoss, SmoothCrossEntropyLoss, TaylorCrossEntropyLoss, RandomChoice]
 LEARNING_RATE            = 1e-3
-MAX_EPOCHS               = 45
+MAX_EPOCHS               = 5
 SCHEDULER_BATCH_STEP     = True # [True, False]
 
 # ~ is the blank character
