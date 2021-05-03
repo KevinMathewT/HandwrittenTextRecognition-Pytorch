@@ -29,7 +29,7 @@ class LineDetDataset(Dataset):
         full_bb = records["full_bb"][0]
         image /= 255.0
 
-        display_image_with_bb(image, records["line_bb"])
+        # display_image_with_bb(image, records["line_bb"])
 
         # DETR takes in data in COCO format
         bb = records["line_bb"]
@@ -97,7 +97,7 @@ def get_valid_dataloader(valid):
 
 
 def get_loaders(fold):
-    train_folds = pd.read_csv(config.FORMS_DF)
+    train_folds = create_df()
     train = train_folds[train_folds.fold != fold]
     valid = train_folds[train_folds.fold == fold]
 
