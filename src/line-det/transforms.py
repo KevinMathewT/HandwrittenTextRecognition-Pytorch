@@ -3,7 +3,6 @@ from albumentations.pytorch.transforms import ToTensorV2
 
 
 def get_train_transforms(bb):
-    print(bb)
     return A.Compose(
         [
             A.Crop(*bb),
