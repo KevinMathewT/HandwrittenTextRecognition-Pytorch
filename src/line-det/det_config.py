@@ -2,6 +2,7 @@ NET                      = "DETR"
 SEED                     = 719
 FOLDS                    = 5
 DROP_LAST                = True # [True, False]
+USE_GPU                  = True
 
 H                        = 512
 W                        = 512
@@ -27,4 +28,5 @@ FREEZE_BN_EPOCHS         = 5
 
 
 LEARNING_VERBOSE         = True
+VERBOSE_STEP             = 1
 CPU_WORKERS              = 0

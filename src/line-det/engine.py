@@ -4,6 +4,7 @@ import torch
 
 from ..utils import AverageLossMeter
 from .model import nets
+from . import det_config
 
 
 def train_one_epoch(fold, epoch, model, train_loader, loss_fn, optimizer, device, scheduler=None, schd_batch_update=False):
@@ -36,8 +37,8 @@ def train_one_epoch(fold, epoch, model, train_loader, loss_fn, optimizer, device
         summary_loss.update(curr_batch_avg_loss=loss.item(), batch_size=curr_batch_size)
 
         loss = summary_loss.avg
-        if (config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0) or ((step + 1) == total_steps) or ((step + 1) == 1):
-            description = f'[{fold}/{config.DET_FOLDS - 1}][{epoch:>2d}/{config.DET_MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Time: {(time.time() - t) / 60:.2f} m'
+        if (det_config.LEARNING_VERBOSE and (step + 1) % det_config.VERBOSE_STEP == 0) or ((step + 1) == total_steps) or ((step + 1) == 1):
+            description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Time: {(time.time() - t) / 60:.2f} m'
             print(description, flush=True)
 
 
@@ -65,8 +66,8 @@ def valid_one_epoch(fold, epoch, model, valid_loader, loss_fn, device):
             summary_loss.update(loss.item(), curr_batch_size)
 
             loss = summary_loss.avg
-            if (config.LEARNING_VERBOSE and (step + 1) % config.VERBOSE_STEP == 0) or ((step + 1) == total_steps) or ((step + 1) == 1):
-                description = f'[{fold}/{config.DET_FOLDS - 1}][{epoch:>2d}/{config.DET_MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Time: {(time.time() - t) / 60:.2f} m'
+            if (det_config.LEARNING_VERBOSE and (step + 1) % det_config.VERBOSE_STEP == 0) or ((step + 1) == total_steps) or ((step + 1) == 1):
+                description = f'[{fold}/{det_config.DET_FOLDS - 1}][{epoch:>2d}/{det_config.DET_MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Time: {(time.time() - t) / 60:.2f} m'
                 print(description, flush=True)
 
 
@@ -76,7 +77,7 @@ def get_net(name):
 
 
 def get_device(n):
-    if not config.USE_GPU:
+    if not det_config.USE_GPU:
         print(f"Device:                      CPU")
         return torch.device('cpu')
     else:
