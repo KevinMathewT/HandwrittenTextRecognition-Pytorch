@@ -88,7 +88,7 @@ def create_df():
     else:
         forms = glob.glob(config.FORMS_PATH + "/*/*.png") # Kaggle
         # forms = glob.glob(config.FORMS_PATH + "\*.png")  # PC
-        print(forms)
+        # print(forms)
         df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
         df["path"] = df.apply(lambda row: row.replace())
         df["image_id"] = df.apply(
