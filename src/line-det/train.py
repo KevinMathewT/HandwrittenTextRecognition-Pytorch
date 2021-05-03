@@ -10,7 +10,7 @@ from .engine import get_device, get_net, train_one_epoch, valid_one_epoch
 from .loss import get_train_criterion, get_valid_criterion
 from .optim import get_optimizer_and_scheduler
 from . import det_config
-# from .. import config
+from .. import config
 from .. import utils
 
 warnings.filterwarnings("ignore")
