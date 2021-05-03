@@ -7,7 +7,7 @@ from .model import nets
 from . import det_config
 
 
-def train_one_epoch(fold, epoch, model, train_loader, loss_fn, optimizer, device, scheduler=None, schd_batch_update=False):
+def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device, scheduler=None, schd_batch_update=False):
     t = time.time()
     model.train()
     loss_fn.train()
@@ -42,7 +42,7 @@ def train_one_epoch(fold, epoch, model, train_loader, loss_fn, optimizer, device
             print(description, flush=True)
 
 
-def valid_one_epoch(fold, epoch, model, valid_loader, loss_fn, device):
+def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
     t = time.time()
     model.eval()
     loss_fn.eval()
