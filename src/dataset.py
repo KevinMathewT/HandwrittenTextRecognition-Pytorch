@@ -25,13 +25,13 @@ class HandWritingLinesDataset(Dataset):
         return self.df.shape[0]
 
     def __getitem__(self, index: int):
-        img = get_img(self.df.loc[index]['path']).copy()
+        image = get_img(self.df.loc[index]['path']).copy()
         target = self.df.loc[index]['label']
 
         if self.transforms:
-            img = self.transforms(image=img)['image']
+            image = self.transforms(image=image)['image']
 
-        return img, target
+        return image, target
 
 
 def get_train_dataloader(train):

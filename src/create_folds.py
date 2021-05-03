@@ -9,6 +9,7 @@ import seaborn as sns
 from . import config
 from .utils import _clean_text
 
+
 def read_file(file):
     f = open(file, "r")
     paths = []
@@ -16,7 +17,7 @@ def read_file(file):
     for line in f.readlines():
         path = line.split('\t')[0]
         label = _clean_text('\t'.join(line.split('\t')[1:]))
-        if len(label) >= config.MIN_LEN_ALLOWED and len(label) <= config.MAX_LEN_ALLOWED:
+        if config.MIN_LEN_ALLOWED <= len(label) <= config.MAX_LEN_ALLOWED:
             paths.append(path)
             labels.append(label)
     paths = np.array(paths).reshape(-1, 1)
@@ -25,6 +26,7 @@ def read_file(file):
     df = pd.DataFrame(np.concatenate([paths, labels], axis=1), columns=["path", "label"])
 
     return df
+
 
 if __name__ == "__main__":
     print(config.TRAIN_1)

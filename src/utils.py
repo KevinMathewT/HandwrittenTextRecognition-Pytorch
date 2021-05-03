@@ -50,19 +50,19 @@ def get_accuracy(predictions, targets, normalize=True):
     return accuracy_score(targets, predictions, normalize=normalize)
 
 
-def create_dirs():
+def create_dirs(net=config.NET):
     try:
         os.mkdir(config.WEIGHTS_PATH)
         print(f"Created Folder \'{config.WEIGHTS_PATH}\'")
     except FileExistsError:
         print(f"Folder \'{config.WEIGHTS_PATH}\' already exists.")
     try:
-        os.mkdir(os.path.join(config.WEIGHTS_PATH, f'{config.NET}'))
+        os.mkdir(os.path.join(config.WEIGHTS_PATH, f'{net}'))
         print(
-            f"Created Folder \'{os.path.join(config.WEIGHTS_PATH, f'{config.NET}')}\'")
+            f"Created Folder \'{os.path.join(config.WEIGHTS_PATH, f'{net}')}\'")
     except FileExistsError:
         print(
-            f"Folder \'{os.path.join(config.WEIGHTS_PATH, f'{config.NET}')}\' already exists.")
+            f"Folder \'{os.path.join(config.WEIGHTS_PATH, f'{net}')}\' already exists.")
 
 
 class AverageLossMeter:
@@ -75,7 +75,7 @@ class AverageLossMeter:
         self.running_total_loss = 0
         self.count = 0
 
-    def update(self, curr_batch_avg_loss: float, batch_size: str):
+    def update(self, curr_batch_avg_loss, batch_size):
         self.curr_batch_avg_loss = curr_batch_avg_loss
         self.running_total_loss += curr_batch_avg_loss * batch_size
         self.count += batch_size
@@ -230,3 +230,25 @@ def freeze_batchnorm_stats(net):
     except ValueError:
         print('error with BatchNorm2d or LayerNorm')
         return
+
+
+def display_image_with_bb(image, bb, scale=0.3, format="normal"):
+    if format == "coco":
+        bb[:, 2] = bb[:, 2] + bb[:, 0] # Height
+        bb[:, 3] = bb[:, 3] + bb[:, 1] # Width
+
+    y_ = image.shape[0]
+    x_ = image.shape[1]
+    target_size = (int(scale * x_), int(scale * y_))
+    image = cv2.resize(image, target_size);
+
+    for b in bb:
+        (x1, y1, x2, y2) = b
+        x1 = int(np.round(x1 * scale))
+        y1 = int(np.round(y1 * scale))
+        x2 = int(np.round(x2 * scale))
+        y2 = int(np.round(y2 * scale))
+        img = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+    cv2.imshow("Rectangled", image)
+    cv2.waitKey(0)

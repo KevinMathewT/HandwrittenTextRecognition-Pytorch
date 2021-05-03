@@ -85,7 +85,7 @@ def create_df():
         df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
         df["path"] = df.apply(lambda row: row.replace())
         df["image_id"] = df.apply(
-            lambda row: row.path.split("/")[-1].split('.')[0], axis=1)
+            lambda row: row.path.split("\\")[-1].split('.')[0], axis=1)
         df["xml"] = df.apply(lambda row: os.path.join(
             config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
         df["label"] = df.apply(lambda row: _parse_xml_file(row.xml), axis=1)
@@ -96,6 +96,7 @@ def create_df():
         df = pd.concat([df, bb], axis=1)
         df = df[["image_id", "path", "label", "xml", "x1", "y1", "x2", "y2"]]
         df.to_csv(config.FORMS_DF, index=False)
+        print(df)
         print(f"FORMS_DF cached at {config.FORMS_DF}")
     return df
 

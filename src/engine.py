@@ -91,7 +91,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
 def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device, scheduler=None, schd_loss_update=False):
     model.eval()
 
-    t = time.time()
+
     running_loss = AverageLossMeter()
     running_string_metrics = StringMatchingMetrics()
     total_steps = len(valid_loader)
