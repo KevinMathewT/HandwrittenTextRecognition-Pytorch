@@ -10,6 +10,7 @@ from .transforms import get_train_transforms, get_valid_transforms
 from .create_folds import create_df
 from ..utils import get_img, display_image_with_bb
 from . import det_config
+from .. import config
 
 
 class LineDetDataset(Dataset):
