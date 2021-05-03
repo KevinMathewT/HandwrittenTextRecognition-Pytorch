@@ -86,8 +86,8 @@ def create_df():
         df["full_bb"] = df["full_bb"].apply(literal_eval)
         df["line_bb"] = df["line_bb"].apply(literal_eval)
     else:
-        # forms = glob.glob(config.FORMS_PATH + "/*/*.png") # Kaggle
-        forms = glob.glob(config.FORMS_PATH + "\*.png")  # PC
+        forms = glob.glob(config.FORMS_PATH + "/*/*.png") # Kaggle
+        # forms = glob.glob(config.FORMS_PATH + "\*.png")  # PC
         df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
         df["path"] = df.apply(lambda row: row.replace())
         df["image_id"] = df.apply(
