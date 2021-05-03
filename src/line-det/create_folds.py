@@ -3,6 +3,8 @@ from tqdm import tqdm
 import xml.etree.ElementTree as ET
 
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from ast import literal_eval
 from sklearn.model_selection import StratifiedKFold
 
@@ -91,7 +93,8 @@ def create_df():
         df = pd.DataFrame(np.array(forms).reshape(-1, 1), columns=["path"])
         df["path"] = df.apply(lambda row: row.replace())
         df["image_id"] = df.apply(
-            lambda row: row.path.split("/")[-1].split('.')[0], axis=1)
+            lambda row: row.path.split("/")[-1].split('.')[0], axis=1) # Kaggle
+            # lambda row: row.path.split("\\")[-1].split('.')[0], axis=1) # PC
         df["xml"] = df.apply(lambda row: os.path.join(
             config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
         df["label"] = df.apply(lambda row: _parse_xml_file(row.xml), axis=1)
@@ -101,6 +104,8 @@ def create_df():
         df["line_bb"] = df.apply(lambda row: _get_bb_of_item(row.xml, "line"), axis=1)
 
         df["num_lines"] = df.apply(lambda row: len(row.line_bb), axis=1)
+        sns.displot(df["num_lines"])
+        plt.show()
 
         df["fold"] = -1
         X = df['image_id']
@@ -117,8 +122,8 @@ def create_df():
     return df
 
 
-if __name__ == "__main__":
-    df = create_df()
+# if __name__ == "__main__":
+#     df = create_df()
     # records = df.loc[0]
     # bb = records["full_bb"]
     #
