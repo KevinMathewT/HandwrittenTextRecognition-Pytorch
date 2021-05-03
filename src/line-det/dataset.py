@@ -80,7 +80,7 @@ def get_train_dataloader(train):
         batch_size=det_config.TRAIN_BATCH_SIZE,
         drop_last=det_config.DROP_LAST,
         num_workers=det_config.CPU_WORKERS,
-        collate_fn=collate_fn(),
+        collate_fn=collate_fn,
         shuffle=True)
 
 
@@ -91,7 +91,7 @@ def get_valid_dataloader(valid):
         batch_size=det_config.VALID_BATCH_SIZE,
         drop_last=det_config.DROP_LAST,
         num_workers=det_config.CPU_WORKERS,
-        collate_fn=collate_fn(),
+        collate_fn=collate_fn,
         shuffle=False)
 
 
