@@ -24,7 +24,6 @@ class LineDetDataset(Dataset):
 
     def __getitem__(self, index):
         records = self.df.loc[index]
-        print(self.df.loc[index]['path'])
         image = get_img(self.df.loc[index]['path']).copy().astype(np.float32)
         full_bb = records["full_bb"][0]
         image /= 255.0
@@ -34,7 +33,6 @@ class LineDetDataset(Dataset):
         # DETR takes in data in COCO format
         bb = records["line_bb"]
         boxes = np.array(bb)
-        print(boxes)
         boxes[:, 2] = boxes[:, 2] - boxes[:, 0] # Height
         boxes[:, 3] = boxes[:, 3] - boxes[:, 1] # Width
 
