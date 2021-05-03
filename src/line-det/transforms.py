@@ -24,7 +24,7 @@ def get_train_transforms(bb):
 def get_valid_transforms(bb):
     return A.Compose(
         [
-            A.Crop(**bb, p=1),
+            A.Crop(*bb),
             A.Resize(height=512, width=512, p=1.0),
             ToTensorV2(p=1.0)
         ],
