@@ -24,6 +24,7 @@ class LineDetDataset(Dataset):
 
     def __getitem__(self, index):
         records = self.df.loc[index]
+        print(self.df.loc[index]['path'])
         image = get_img(self.df.loc[index]['path']).copy().astype(np.float32)
         full_bb = records["full_bb"][0]
         image /= 255.0
