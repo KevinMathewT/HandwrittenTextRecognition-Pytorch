@@ -94,7 +94,6 @@ def create_df():
             lambda row: row.path.split("/")[-1].split('.')[0], axis=1)
         df["xml"] = df.apply(lambda row: os.path.join(
             config.GENERATED_FILES_PATH, "xml") + "/" + row.image_id + ".xml", axis=1)
-        print(df)
         df["label"] = df.apply(lambda row: _parse_xml_file(row.xml), axis=1)
         # df[["x1", "x2", "y1", "y2"]] = df.apply(lambda row: _get_bb_of_item(row.xml), axis=1)
 
@@ -114,15 +113,12 @@ def create_df():
         df = df[['image_id', 'label', 'path', 'xml', 'full_bb', 'line_bb', 'fold']].reset_index(drop=True)
 
         df.to_csv(config.FORMS_DF, index=False)
-        print(df)
         print(f"FORMS_DF cached at {config.FORMS_DF}")
     return df
 
 
 if __name__ == "__main__":
     df = create_df()
-    print(df.columns)
-    print(df)
     # records = df.loc[0]
     # bb = records["full_bb"]
     #
