@@ -51,6 +51,7 @@ def run_fold(fold):
 
         torch.save(net.state_dict(), os.path.join(config.WEIGHTS_PATH,
                                                   f'{det_config.NET}/{det_config.NET}_fold_{fold}_{epoch}.bin'))
+        print(f'[{fold}/{det_config.FOLDS - 1}] Model saved at {os.path.join(config.WEIGHTS_PATH, f"{det_config.NET}/{det_config.NET}_fold_{fold}_{epoch}.bin")}')
 
     # torch.save(model.cnn_model.state_dict(),'{}/cnn_model_fold_{}_{}'.format(CFG['model_path'], fold, CFG['tag']))
     del net, optimizer, train_loader, valid_loader, scheduler

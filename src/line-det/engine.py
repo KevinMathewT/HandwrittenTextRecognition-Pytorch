@@ -41,6 +41,8 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
             description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Time: {(time.time() - t) / 60:.2f} m'
             print(description, flush=True)
 
+        break
+
 
 def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
     t = time.time()
@@ -69,6 +71,8 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
             if (det_config.LEARNING_VERBOSE and (step + 1) % det_config.VERBOSE_STEP == 0) or ((step + 1) == total_steps) or ((step + 1) == 1):
                 description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Time: {(time.time() - t) / 60:.2f} m'
                 print(description, flush=True)
+
+            break
 
 
 def get_net(name):
