@@ -6,7 +6,7 @@ USE_GPU                  = True
 
 H                        = 512
 W                        = 512
-NUM_CLASSES              = 1
+NUM_CLASSES              = 2
 NUM_QUERIES              = 15
 DET_PRETRAINED           = True
 DET_BATCH_SIZE           = 32
