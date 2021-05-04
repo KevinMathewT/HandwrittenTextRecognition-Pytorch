@@ -41,13 +41,13 @@ def run_fold(fold):
         if det_config.DO_FREEZE_BATCH_NORM and epoch < det_config.FREEZE_BN_EPOCHS:
             utils.freeze_batchnorm_stats(net)
 
+        print(f"------------------------------------------------------------------------------")
         train_one_epoch(fold, epoch, net, loss_tr, optimizer, train_loader, device,
                         scheduler=scheduler, schd_batch_update=det_config.SCHEDULER_BATCH_STEP)
 
         valid_one_epoch(fold, epoch, net, loss_fn, valid_loader, device)
 
         print(f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}] Time Taken for Epoch {epoch}: {time.time() - epoch_start} seconds |')
-        print(f"------------------------------------------------------------------------------")
 
         torch.save(net.state_dict(), os.path.join(config.WEIGHTS_PATH,
                                                   f'{det_config.NET}/{det_config.NET}_fold_{fold}_{epoch}.bin'))
