@@ -24,6 +24,7 @@ class LineDetDataset(Dataset):
 
     def __getitem__(self, index):
         records = self.df.loc[index]
+        print("Before Line BB: ", records["line_bb"])
         image_ids = records["image_id"]
         image = get_img(self.df.loc[index]['path']).copy().astype(np.float32)
         full_bb = records["full_bb"][0]
@@ -66,6 +67,8 @@ class LineDetDataset(Dataset):
             'image_id': torch.tensor([index]), 'area': area
         }
 
+        print("After Line BB: ", records["line_bb"])
+        print("Normalized BB: ", boxes)
         return image, target, image_ids
 
 
@@ -108,11 +111,11 @@ def get_loaders(fold):
     return train_loader, valid_loader
 
 
-# if __name__ == "__main__":
-#     df = create_df()
-#     dataset = LineDetDataset(df=df, transforms_function=get_train_transforms)
-#     for image, target in dataset:
-#         print(image.shape)
-#         print(target)
-#         # display_image_with_bb(image.permute(1, 2, 0).numpy(), target["boxes"].numpy().astype(np.int32), scale=1, format="coco")
-#         break
+if __name__ == "__main__":
+    df = create_df()
+    dataset = LineDetDataset(df=df, transforms_function=get_train_transforms)
+    for image, target, image_id in dataset:
+        print(image.shape)
+        print(target)
+        # display_image_with_bb(image.permute(1, 2, 0).numpy(), target["boxes"].numpy().astype(np.int32), scale=1, format="coco")
+        break

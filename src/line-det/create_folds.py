@@ -82,7 +82,7 @@ def _get_bb_of_item(xml_file_path, level):
 
 
 def create_df():
-    if os.path.isfile(config.FORMS_DF) and False:
+    if os.path.isfile(config.FORMS_DF):
         print(f"Loaded cached FORMS_DF from {config.FORMS_DF}")
         df = pd.read_csv(config.FORMS_DF)
         df["full_bb"] = df["full_bb"].apply(literal_eval)
