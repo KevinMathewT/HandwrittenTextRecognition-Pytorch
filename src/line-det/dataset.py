@@ -24,6 +24,7 @@ class LineDetDataset(Dataset):
 
     def __getitem__(self, index):
         records = self.df.loc[index]
+        image_ids = records["image_id"]
         image = get_img(self.df.loc[index]['path']).copy().astype(np.float32)
         full_bb = records["full_bb"][0]
         image /= 255.0
@@ -65,7 +66,7 @@ class LineDetDataset(Dataset):
             'image_id': torch.tensor([index]), 'area': area
         }
 
-        return image, target
+        return image, target, image_ids
 
 
 def collate_fn(batch):
