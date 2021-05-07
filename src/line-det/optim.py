@@ -164,7 +164,7 @@ def get_optimizer_and_scheduler(net, dataloader):
     elif det_config.SCHEDULER == "CosineAnnealingWarmRestarts":
         scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
             optimizer,
-            T_0=(det_config.MAX_EPOCHS - det_config.WARMUP_EPOCHS) / 2,
+            T_0=(det_config.MAX_EPOCHS - det_config.WARMUP_EPOCHS) // 2,
             T_mult=1,
             eta_min=1e-6,
             last_epoch=-1)
