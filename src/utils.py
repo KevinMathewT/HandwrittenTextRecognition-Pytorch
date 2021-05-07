@@ -14,9 +14,6 @@ from . import config
 from .transforms import *
 from .decoder import bestPathDecoder, beamSearchDecoder
 
-import editdistance
-import jiwer
-
 if config.DECODER == "BestPathDecoder":
     decoding_fn = bestPathDecoder
 elif config.DECODER == "BeamSearchDecoder":
@@ -101,117 +98,6 @@ class AccuracyMeter:
     @property
     def avg(self):
         self.avg_score = self.sum/self.count
-        return self.avg_score
-
-
-class StringMatchingMetrics:
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
-        self.score = 0
-        self.count = 0
-        self.ed = 0
-        self.wer = 0
-        self.mer = 0
-        self.wil = 0
-
-    def update(self, y_pred, y_true, batch_size=1):
-        self.count += batch_size
-        total_ed = self.get_total_edit_distance(y_pred, y_true)
-        total_wer, total_mer, total_wil = self.get_total_error_rates(y_pred, y_true)
-        self.ed += total_ed
-        self.wer += total_wer
-        self.mer += total_mer
-        self.wil += total_wil
-
-    def update_with_strings(self, y_pred, y_true, batch_size=1):
-        self.count += batch_size
-        total_ed = self.get_total_edit_distance_with_strings(y_pred, y_true)
-        total_wer, total_mer, total_wil = self.get_total_error_rates_with_strings(y_pred, y_true)
-        self.ed += total_ed
-        self.wer += total_wer
-        self.mer += total_mer
-        self.wil += total_wil
-
-    @staticmethod
-    def get_total_edit_distance(y_pred, y_true):
-        # print(y_pred.size(), len(y_true))
-
-        y_pred = y_pred.permute(1, 0, 2)
-        total_distance = 0.0
-
-        for i in range(len(y_true)):
-            pred = y_pred[i].view(-1, config.N_CLASSES)
-            output_decoded = decoding_fn(pred.detach().cpu().numpy())
-            distance = editdistance.eval(output_decoded, y_true[i])
-            # print(output_decoded, y_true[i], distance)
-            total_distance += distance
-
-        return total_distance
-
-    @staticmethod
-    def get_total_error_rates(y_pred, y_true):
-        # print(y_pred.size(), len(y_true))
-
-        y_pred = y_pred.permute(1, 0, 2)
-        total_wer = 0.0
-        total_mer = 0.0
-        total_wil = 0.0
-
-        for i in range(len(y_true)):
-            pred = y_pred[i].view(-1, config.N_CLASSES)
-            output_decoded = decoding_fn(pred.detach().cpu().numpy())
-            error = jiwer.compute_measures(y_true[i], output_decoded)
-            # print(output_decoded, y_true[i], distance)
-            total_wer += error['wer']
-            total_mer += error['mer']
-            total_wil += error['wil']
-
-        return total_wer, total_mer, total_wil
-
-    @staticmethod
-    def get_total_edit_distance_with_strings(y_pred, y_true):
-        total_distance = 0.0
-
-        for i in range(len(y_true)):
-            distance = editdistance.eval(y_pred[i], y_true[i])
-            total_distance += distance
-
-        return total_distance
-
-    @staticmethod
-    def get_total_error_rates_with_strings(y_pred, y_true):
-        total_wer = 0.0
-        total_mer = 0.0
-        total_wil = 0.0
-
-        for i in range(len(y_true)):
-            error = jiwer.compute_measures(y_true[i], y_pred[i])
-            total_wer += error['wer']
-            total_mer += error['mer']
-            total_wil += error['wil']
-
-        return total_wer, total_mer, total_wil
-
-    @property
-    def avg_edit_distance(self):
-        self.avg_score = self.ed / self.count
-        return self.avg_score
-
-    @property
-    def avg_wer(self):
-        self.avg_score = self.wer / self.count
-        return self.avg_score
-
-    @property
-    def avg_mer(self):
-        self.avg_score = self.mer / self.count
-        return self.avg_score
-
-    @property
-    def avg_wil(self):
-        self.avg_score = self.wil / self.count
         return self.avg_score
 
 
