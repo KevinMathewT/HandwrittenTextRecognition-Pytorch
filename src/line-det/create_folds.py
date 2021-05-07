@@ -104,7 +104,6 @@ def create_df():
         df["line_bb"] = df.apply(lambda row: _get_bb_of_item(row.xml, "line"), axis=1)
 
         df["num_lines"] = df.apply(lambda row: len(row.line_bb), axis=1)
-        sns.displot(df["num_lines"])
         plt.show()
 
         df["fold"] = -1
