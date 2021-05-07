@@ -122,8 +122,9 @@ def create_df():
     return df
 
 
-# if __name__ == "__main__":
-#     df = create_df()
+if __name__ == "__main__":
+    df = create_df()
+    print(df)
     # records = df.loc[0]
     # bb = records["full_bb"]
     #
