@@ -24,7 +24,7 @@ class LineDetDataset(Dataset):
 
     def __getitem__(self, index):
         records = self.df.loc[index]
-        print("Before Line BB: ", records["line_bb"])
+        # print("Before Line BB: ", records["line_bb"])
         image_ids = records["image_id"]
         image = get_img(self.df.loc[index]['path']).copy().astype(np.float32)
         full_bb = records["full_bb"][0]
@@ -67,8 +67,8 @@ class LineDetDataset(Dataset):
             'image_id': torch.tensor([index]), 'area': area
         }
 
-        print("After Line BB: ", records["line_bb"])
-        print("Normalized BB: ", boxes)
+        # print("After Line BB: ", records["line_bb"])
+        # print("Normalized BB: ", boxes)
         return image, target, image_ids
 
 
