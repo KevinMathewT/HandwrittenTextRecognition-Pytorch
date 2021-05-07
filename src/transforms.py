@@ -1,24 +1,13 @@
 import math
-from albumentations import (
-    HorizontalFlip, VerticalFlip, IAAPerspective, ShiftScaleRotate, CLAHE, RandomRotate90, RandomBrightness, Transpose, ToGray, Rotate,
-    Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, HueSaturationValue, RandomContrast, GaussianBlur,
-    IAAAdditiveGaussianNoise, GaussNoise, MotionBlur, MedianBlur, IAAPiecewiseAffine, RandomResizedCrop,
-    IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose, Normalize, Cutout, CoarseDropout, ShiftScaleRotate, CenterCrop, Resize
-)
-from albumentations.pytorch import ToTensorV2
-from albumentations.augmentations import LongestMaxSize
-import cv2
-from skimage import transform
-from torch.nn.modules.utils import _pair, _quadruple
-
-from . import config
-from .utils import *
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.modules.utils import _pair, _quadruple
+import albumentations as A
+from albumentations.pytorch.transforms import ToTensorV2
 
-import numpy as np
+from . import config
+from .utils import *
 
 
 class TransposeImage(object):
@@ -245,19 +234,19 @@ class NumpyToTensor(object):
 
 
 def get_train_transforms():
-    return Compose([
+    return A.Compose([
         Rescale((config.W, config.H)),
         TransposeImage(),
         # VerticalFlip(p=1),
         # HorizontalFlip(p=0.5),
         # ShiftScaleRotate(p=1., rotate_limit=5.),
-        HueSaturationValue(hue_shift_limit=0.2, sat_shift_limit=0.2, val_shift_limit=0.2, p=0.5),
-        RandomBrightnessContrast(
+        A.HueSaturationValue(hue_shift_limit=0.2, sat_shift_limit=0.2, val_shift_limit=0.2, p=0.5),
+        A.RandomBrightnessContrast(
             brightness_limit=(-0.1, 0.1), contrast_limit=(-0.1, 0.1), p=0.5),
-        Rotate(p=0.5, border_mode=cv2.BORDER_CONSTANT, value=[255., 255., 255.], limit=5.),
-        Normalize(mean=[0.485, 0.456, 0.406], std=[
+        A.Rotate(p=0.5, border_mode=cv2.BORDER_CONSTANT, value=[255., 255., 255.], limit=5.),
+        A.Normalize(mean=[0.485, 0.456, 0.406], std=[
                   0.229, 0.224, 0.225], max_pixel_value=255.0, p=1.0),
-        Cutout(p=0.5),
+        A.Cutout(p=0.5),
         # ToGrayscale(),
 
         # # # GaussianFiltering(channels=1, kernel_size=5, sigma=1),
@@ -280,10 +269,10 @@ def get_train_transforms():
 
 
 def get_valid_transforms():
-    return Compose([
+    return A.Compose([
         Rescale((config.W, config.H)),
         TransposeImage(),
-        Normalize(mean=[0.485, 0.456, 0.406], std=[
+        A.Normalize(mean=[0.485, 0.456, 0.406], std=[
                   0.229, 0.224, 0.225], max_pixel_value=255.0, p=1.0),
         ToTensorV2(p=1.0),
     ], p=1.)
