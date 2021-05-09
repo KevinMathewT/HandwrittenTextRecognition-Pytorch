@@ -11,6 +11,7 @@ from .det_utils import calculate_image_precision
 
 def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device, scheduler=None,
                     schd_batch_update=False):
+    print(model)
     t = time.time()
     model.train()
     loss_fn.train()
