@@ -73,6 +73,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
                 curr_batch_size = len(images)
 
                 predictions = model(images)
+                print(predictions)
 
                 for i, image in enumerate(images):
                     boxes = [prediction[i]['boxes'].data.cpu().numpy() / (det_config.H - 1) for prediction in
