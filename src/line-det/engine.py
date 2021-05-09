@@ -100,6 +100,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
 
                 else:
                     loss_dict = model(images, targets)
+                    print(loss_dict)
                     loss = sum(loss for loss in loss_dict.values())
 
                 summary_loss.update(loss.item(), curr_batch_size)
