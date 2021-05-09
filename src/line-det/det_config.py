@@ -1,4 +1,4 @@
-NET                      = "DETR"
+NET                      = "FasterRCNN"
 SEED                     = 719
 FOLDS                    = 5
 DROP_LAST                = True # [True, False]
@@ -6,6 +6,8 @@ USE_GPU                  = True
 
 H                        = 512
 W                        = 512
+IMAGE_FORMAT             = "pascal_voc" # ["coco", "pascal_voc"]
+NORMALIZE_BB             = False
 NUM_CLASSES              = 2
 NUM_QUERIES              = 15
 DET_PRETRAINED           = True
@@ -25,6 +27,7 @@ TRAIN_BATCH_SIZE         = 32
 VALID_BATCH_SIZE         = 32
 DO_FREEZE_BATCH_NORM     = True # [True, False]
 FREEZE_BN_EPOCHS         = 5
+WEIGHTED_LOSS            = False
 
 
 LEARNING_VERBOSE         = True

@@ -64,7 +64,10 @@ def create_dirs(net=config.NET):
 
 class AverageLossMeter:
     def __init__(self):
-        self.reset()
+        self.curr_batch_avg_loss = 0
+        self.avg = 0
+        self.running_total_loss = 0
+        self.count = 0
 
     def reset(self):
         self.curr_batch_avg_loss = 0
@@ -72,7 +75,7 @@ class AverageLossMeter:
         self.running_total_loss = 0
         self.count = 0
 
-    def update(self, curr_batch_avg_loss, batch_size):
+    def update(self, curr_batch_avg_loss, batch_size=1):
         self.curr_batch_avg_loss = curr_batch_avg_loss
         self.running_total_loss += curr_batch_avg_loss * batch_size
         self.count += batch_size
@@ -118,7 +121,7 @@ def freeze_batchnorm_stats(net):
         return
 
 
-def display_image_with_bb(image, bb, scale=0.3, format="normal"):
+def display_image_with_bb(image, bb, scale=0.3, format="pascal_voc"):
     if format == "coco":
         bb[:, 2] = bb[:, 2] + bb[:, 0] # Height
         bb[:, 3] = bb[:, 3] + bb[:, 1] # Width
@@ -134,7 +137,7 @@ def display_image_with_bb(image, bb, scale=0.3, format="normal"):
         y1 = int(np.round(y1 * scale))
         x2 = int(np.round(x2 * scale))
         y2 = int(np.round(y2 * scale))
-        img = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        img = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
     cv2.imshow("Rectangled", image)
     cv2.waitKey(0)

@@ -1,8 +1,10 @@
 import albumentations as A
 from albumentations.pytorch.transforms import ToTensorV2
 
+from . import det_config
 
-def get_train_transforms(bb):
+
+def get_train_transforms(bb, format=det_config.IMAGE_FORMAT):
     return A.Compose(
         [
             A.Crop(*bb),
@@ -10,11 +12,11 @@ def get_train_transforms(bb):
             ToTensorV2(p=1.0)
         ],
         p=1.0,
-        bbox_params=A.BboxParams(format='coco', min_area=0, min_visibility=0, label_fields=['labels'])
+        bbox_params=A.BboxParams(format=format, label_fields=['labels'])
     )
 
 
-def get_valid_transforms(bb):
+def get_valid_transforms(bb, format=det_config.IMAGE_FORMAT):
     return A.Compose(
         [
             A.Crop(*bb),
@@ -22,5 +24,5 @@ def get_valid_transforms(bb):
             ToTensorV2(p=1.0)
         ],
         p=1.0,
-        bbox_params=A.BboxParams(format='coco', min_area=0, min_visibility=0, label_fields=['labels'])
+        bbox_params=A.BboxParams(format=format, label_fields=['labels'])
     )

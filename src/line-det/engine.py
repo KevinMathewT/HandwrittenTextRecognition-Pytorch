@@ -1,10 +1,12 @@
 import time
+import numpy as np
 
 import torch
 
 from ..utils import AverageLossMeter
 from .model import nets
 from . import det_config
+from .det_utils import calculate_image_precision
 
 
 def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device, scheduler=None,
@@ -21,14 +23,18 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
             curr_batch_size = len(images)
-            output = model(images)
-            loss_dict = loss_fn(output, targets)
-            weight_dict = loss_fn.weight_dict
 
-            loss = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
+            if det_config.WEIGHTED_LOSS:
+                output = model(images)
+                loss_dict = loss_fn(output, targets)
+                weight_dict = loss_fn.weight_dict
+                loss = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
+
+            else:
+                loss_dict = model(images, targets)
+                loss = sum(loss for loss in loss_dict.values())
 
             optimizer.zero_grad()
-
             loss.backward()
             optimizer.step()
             if scheduler is not None and schd_batch_update:
@@ -51,7 +57,10 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
     model.eval()
     loss_fn.eval()
     summary_loss = AverageLossMeter()
+    summary_iou = AverageLossMeter()
     total_steps = len(valid_loader)
+    validation_image_precisions = []
+    iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
 
     with torch.no_grad():
         try:
@@ -61,19 +70,43 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
 
                 curr_batch_size = len(images)
 
-                output = model(images)
+                predictions = model(images)
 
-                loss_dict = loss_fn(output, targets)
-                weight_dict = loss_fn.weight_dict
+                for i, image in enumerate(images):
+                    boxes = [prediction[i]['boxes'].data.cpu().numpy() / (det_config.H - 1) for prediction in
+                             predictions]
+                    scores = [prediction[i]['scores'].data.cpu().numpy() for prediction in predictions]
+                    labels = [np.ones(prediction[i]['scores'].shape[0]) for prediction in predictions]
 
-                loss = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
+                    boxes = boxes.astype(np.int32).clip(min=0, max=1023)
+                    preds = boxes # outputs[i]['boxes'].data.cpu().numpy()
+                    # scores = outputs[i]['scores'].data.cpu().numpy()
+                    preds_sorted_idx = np.argsort(scores)[::-1]
+                    preds_sorted = preds[preds_sorted_idx]
+                    gt_boxes = targets[i]['boxes'].cpu().numpy().astype(np.int32)
+                    image_precision = calculate_image_precision(preds_sorted,
+                                                                gt_boxes,
+                                                                thresholds=iou_thresholds,
+                                                                form='coco')
+                    summary_iou.update(image_precision)
+
+                if det_config.WEIGHTED_LOSS:
+                    output = model(images)
+                    loss_dict = loss_fn(output, targets)
+                    weight_dict = loss_fn.weight_dict
+                    loss = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
+
+                else:
+                    loss_dict = model(images, targets)
+                    loss = sum(loss for loss in loss_dict.values())
 
                 summary_loss.update(loss.item(), curr_batch_size)
 
                 loss = summary_loss.avg
+                iou = summary_iou.avg
                 if (det_config.LEARNING_VERBOSE and (step + 1) % det_config.VERBOSE_STEP == 0) or (
                         (step + 1) == total_steps) or ((step + 1) == 1):
-                    description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | Time: {(time.time() - t) / 60:.2f} m'
+                    description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | IOU: {iou} | Time: {(time.time() - t) / 60:.2f} m'
                     print(description, flush=True)
         except:
             print(f"Error for ids: {ids}")

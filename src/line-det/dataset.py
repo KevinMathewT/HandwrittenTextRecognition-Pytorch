@@ -14,10 +14,12 @@ from .. import config
 
 
 class LineDetDataset(Dataset):
-    def __init__(self, df, transforms_function=None):
+    def __init__(self, df, transforms_function=None, format=det_config.IMAGE_FORMAT, normalize_bb=det_config.NORMALIZE_BB):
         super().__init__()
         self.df = df.reset_index(drop=True).copy()
         self.transforms_function = transforms_function
+        self.format = format
+        self.normalize_bb = normalize_bb
 
     def __len__(self) -> int:
         return self.df.shape[0]
@@ -32,11 +34,12 @@ class LineDetDataset(Dataset):
 
         # display_image_with_bb(image, records["line_bb"])
 
-        # DETR takes in data in COCO format
         bb = records["line_bb"]
         boxes = np.array(bb)
-        boxes[:, 2] = boxes[:, 2] - boxes[:, 0] # Height
-        boxes[:, 3] = boxes[:, 3] - boxes[:, 1] # Width
+
+        if self.format == "coco":
+            boxes[:, 2] = boxes[:, 2] - boxes[:, 0] # Width
+            boxes[:, 3] = boxes[:, 3] - boxes[:, 1] # Height
 
         # Area of Bounding Box
         area = boxes[:, 2] * boxes[:, 3]
@@ -46,7 +49,7 @@ class LineDetDataset(Dataset):
         labels = np.zeros(len(boxes), dtype=np.int32)
 
         if self.transforms_function:
-            transforms = self.transforms_function(bb=full_bb)
+            transforms = self.transforms_function(bb=full_bb, format=self.format)
             sample = {
                 'image': image,
                 'bboxes': boxes,
@@ -60,11 +63,13 @@ class LineDetDataset(Dataset):
         # Normalizing BBOXES
 
         _, h, w = image.shape
-        boxes = A.augmentations.bbox_utils.normalize_bboxes(sample['bboxes'], rows=h, cols=w)
+        if self.normalize_bb:
+            boxes = A.augmentations.bbox_utils.normalize_bboxes(sample['bboxes'], rows=h, cols=w)
         target = {
             'boxes': torch.as_tensor(boxes, dtype=torch.float32),
             'labels': torch.as_tensor(labels, dtype=torch.long),
-            'image_id': torch.tensor([index]), 'area': area
+            'image_id': torch.tensor([index]),
+            'area': area
         }
 
         # print("After Line BB: ", records["line_bb"])
@@ -111,11 +116,11 @@ def get_loaders(fold):
     return train_loader, valid_loader
 
 
-if __name__ == "__main__":
-    df = create_df()
-    dataset = LineDetDataset(df=df, transforms_function=get_train_transforms)
-    for image, target, image_id in dataset:
-        print(image.shape)
-        print(target)
-        # display_image_with_bb(image.permute(1, 2, 0).numpy(), target["boxes"].numpy().astype(np.int32), scale=1, format="coco")
-        break
+# if __name__ == "__main__":
+#     df = create_df()
+#     dataset = LineDetDataset(df=df, transforms_function=get_train_transforms)
+#     for image, target, image_id in dataset:
+#         print(image.shape)
+#         print(target)
+#         display_image_with_bb(image.permute(1, 2, 0).numpy(), target["boxes"].numpy().astype(np.int32), scale=1) #, format="coco")
+#         break
