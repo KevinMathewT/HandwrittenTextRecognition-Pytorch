@@ -122,5 +122,5 @@ def get_loaders(fold):
 #     for image, target, image_id in dataset:
 #         print(image.shape)
 #         print(target)
-        display_image_with_bb(image.permute(1, 2, 0).numpy(), target["boxes"].numpy().astype(np.int32), scale=1) #, format="coco")
+#         display_image_with_bb(image.permute(1, 2, 0).numpy(), target["boxes"].numpy().astype(np.int32), scale=1) #, format="coco")
 #         break

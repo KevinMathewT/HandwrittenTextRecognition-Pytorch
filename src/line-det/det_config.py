@@ -13,20 +13,20 @@ NUM_QUERIES              = 15
 DET_PRETRAINED           = True
 DET_BATCH_SIZE           = 32
 NULL_CLASS_COEF          = 0.5
-TRAIN_CRITERION          = "BipartiteMatchingLoss"
-VALID_CRITERION          = "BipartiteMatchingLoss"
+TRAIN_CRITERION          = None
+VALID_CRITERION          = None
 OPTIMIZER                = "Adam"  # [Adam, AdamW, RAdam, AdaBelief, RangerAdaBelief]
 SCHEDULER                = "CosineAnnealingWarmRestarts" # [ReduceLROnPlateau, CosineAnnealingLR, OneCycleLR, CosineAnnealingWarmRestarts, StepLR]
-SCHEDULER_WARMUP         = False # [True, False]
-WARMUP_EPOCHS            = 1 if SCHEDULER_WARMUP else 0
+SCHEDULER_WARMUP         = True # [True, False]
+WARMUP_EPOCHS            = 2 if SCHEDULER_WARMUP else 0
 WARMUP_FACTOR            = 7 if SCHEDULER_WARMUP else 1
 LEARNING_RATE            = 5e-4
 MAX_EPOCHS               = 20
 SCHEDULER_BATCH_STEP     = True # [True, False]
 TRAIN_BATCH_SIZE         = 16
 VALID_BATCH_SIZE         = 16
-DO_FREEZE_BATCH_NORM     = False # [True, False]
-FREEZE_BN_EPOCHS         = 5
+DO_FREEZE_BATCH_NORM     = True # [True, False]
+FREEZE_BN_EPOCHS         = 2
 WEIGHTED_LOSS            = False
 
 
