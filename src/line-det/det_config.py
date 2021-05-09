@@ -21,11 +21,11 @@ SCHEDULER_WARMUP         = False # [True, False]
 WARMUP_EPOCHS            = 1 if SCHEDULER_WARMUP else 0
 WARMUP_FACTOR            = 7 if SCHEDULER_WARMUP else 1
 LEARNING_RATE            = 5e-4
-MAX_EPOCHS               = 3
+MAX_EPOCHS               = 20
 SCHEDULER_BATCH_STEP     = True # [True, False]
 TRAIN_BATCH_SIZE         = 16
 VALID_BATCH_SIZE         = 16
-DO_FREEZE_BATCH_NORM     = True # [True, False]
+DO_FREEZE_BATCH_NORM     = False # [True, False]
 FREEZE_BN_EPOCHS         = 5
 WEIGHTED_LOSS            = False
 
