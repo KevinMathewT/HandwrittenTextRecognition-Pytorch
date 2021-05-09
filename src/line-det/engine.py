@@ -32,7 +32,6 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
 
             else:
                 loss_dict = model(images, targets)
-                print(loss_dict)
                 loss = sum(loss for loss in loss_dict.values())
 
             optimizer.zero_grad()
@@ -49,8 +48,6 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
                 description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | LR: {optimizer.param_groups[0]["lr"]:.8f} | Time: {(time.time() - t) / 60:.2f} m'
                 print(description, flush=True)
 
-            break
-
         except Exception as e:
             print(f"{e}\nError for ids: {ids}")
 
@@ -61,7 +58,6 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
     loss_fn.eval()
     summary_iou = AverageLossMeter()
     total_steps = len(valid_loader)
-    validation_image_precisions = []
     iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
 
     with torch.no_grad():
@@ -98,7 +94,6 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
                     description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] IOU: {iou} | Time: {(time.time() - t) / 60:.2f} m'
                     print(description, flush=True)
 
-                break
         except Exception as e:
             print(f"{e}\nError for ids: {ids}")
 
