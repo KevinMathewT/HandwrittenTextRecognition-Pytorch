@@ -50,7 +50,10 @@ class FasterRCNN(nn.Module):
         self.model.roi_heads.box_predictor = FastRCNNPredictor(self.in_features, self.num_classes)
 
     def forward(self, images, targets):
-        return self.model(images, targets)
+        if targets is not None:
+            return self.model(images, targets)
+        else:
+            return self.model(images)
 
 
 nets = {
