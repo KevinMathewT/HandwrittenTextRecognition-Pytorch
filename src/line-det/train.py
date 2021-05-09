@@ -20,6 +20,7 @@ def run_fold(fold):
     utils.create_dirs(net=det_config.NET)
     print(f"------------------------------------------------------------------------------")
     print(f"Training Model:              {det_config.NET}")
+    print(f"Maximum Epochs:              {det_config.MAX_EPOCHS}")
     print(f"Training Fold:               {fold}")
     print(f"Image Dimensions:            {det_config.H}x{det_config.W}")
     print(f"Training Batch Size:         {det_config.TRAIN_BATCH_SIZE}")
