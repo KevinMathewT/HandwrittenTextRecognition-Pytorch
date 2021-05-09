@@ -76,12 +76,11 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
                 print(predictions)
 
                 for i, image in enumerate(images):
-                    boxes = [prediction[i]['boxes'].data.cpu().numpy() / (det_config.H - 1) for prediction in
-                             predictions]
-                    scores = [prediction[i]['scores'].data.cpu().numpy() for prediction in predictions]
-                    labels = [np.ones(prediction[i]['scores'].shape[0]) for prediction in predictions]
+                    boxes = predictions[i]['boxes'].data.cpu().numpy() / (det_config.H - 1)
+                    scores = predictions[i]['scores'].data.cpu().numpy()
+                    labels = np.ones(predictions[i]['scores'].shape[0])
 
-                    boxes = np.array(boxes).astype(np.int32).clip(min=0, max=1023)
+                    # boxes = np.array(boxes).astype(np.int32).clip(min=0, max=1023)
                     preds = boxes # outputs[i]['boxes'].data.cpu().numpy()
                     # scores = outputs[i]['scores'].data.cpu().numpy()
                     preds_sorted_idx = np.argsort(scores)[::-1]
