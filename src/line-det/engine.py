@@ -13,7 +13,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
                     schd_batch_update=False):
     t = time.time()
     model.train()
-    loss_fn.train()
+    loss_fn.train() if loss_fn is not None
     summary_loss = AverageLossMeter()
     total_steps = len(train_loader)
 
@@ -55,7 +55,7 @@ def train_one_epoch(fold, epoch, model, loss_fn, optimizer, train_loader, device
 def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
     t = time.time()
     model.eval()
-    loss_fn.eval()
+    loss_fn.eval() if loss_fn is not None
     summary_iou = AverageLossMeter()
     total_steps = len(valid_loader)
     iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
