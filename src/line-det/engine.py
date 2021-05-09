@@ -59,7 +59,6 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
     t = time.time()
     model.eval()
     loss_fn.eval()
-    summary_loss = AverageLossMeter()
     summary_iou = AverageLossMeter()
     total_steps = len(valid_loader)
     validation_image_precisions = []
@@ -93,24 +92,10 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
                                                                 form='coco')
                     summary_iou.update(image_precision)
 
-                if det_config.WEIGHTED_LOSS:
-                    output = model(images)
-                    loss_dict = loss_fn(output, targets)
-                    weight_dict = loss_fn.weight_dict
-                    loss = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
-
-                else:
-                    loss_dict = model(images, targets)
-                    # print(loss_dict)
-                    loss = sum(loss for loss in loss_dict.values())
-
-                summary_loss.update(loss.item(), curr_batch_size)
-
-                loss = summary_loss.avg
                 iou = summary_iou.avg
                 if (det_config.LEARNING_VERBOSE and (step + 1) % det_config.VERBOSE_STEP == 0) or (
                         (step + 1) == total_steps) or ((step + 1) == 1):
-                    description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] Loss: {loss:.4f} | IOU: {iou} | Time: {(time.time() - t) / 60:.2f} m'
+                    description = f'[{fold}/{det_config.FOLDS - 1}][{epoch:>2d}/{det_config.MAX_EPOCHS - 1:>2d}][{step + 1:>4d}/{total_steps:>4d}] IOU: {iou} | Time: {(time.time() - t) / 60:.2f} m'
                     print(description, flush=True)
 
                 break
