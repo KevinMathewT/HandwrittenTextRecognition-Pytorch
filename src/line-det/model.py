@@ -49,7 +49,7 @@ class FasterRCNN(nn.Module):
         self.in_features = self.model.roi_heads.box_predictor.cls_score.in_features
         self.model.roi_heads.box_predictor = FastRCNNPredictor(self.in_features, self.num_classes)
 
-    def forward(self, images, targets):
+    def forward(self, images, targets=None):
         if targets is not None:
             return self.model(images, targets)
         else:
