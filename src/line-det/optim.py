@@ -166,7 +166,7 @@ def get_optimizer_and_scheduler(net, dataloader):
             optimizer,
             T_0=det_config.MAX_EPOCHS - det_config.WARMUP_EPOCHS,
             T_mult=1,
-            eta_min=1e-3,
+            # eta_min=1e-6,
             last_epoch=-1)
     elif det_config.SCHEDULER == "StepLR":
         scheduler = torch.optim.lr_scheduler.StepLR(
