@@ -78,7 +78,7 @@ def valid_one_epoch(fold, epoch, model, loss_fn, valid_loader, device):
                     scores = [prediction[i]['scores'].data.cpu().numpy() for prediction in predictions]
                     labels = [np.ones(prediction[i]['scores'].shape[0]) for prediction in predictions]
 
-                    boxes = boxes.astype(np.int32).clip(min=0, max=1023)
+                    boxes = np.array(boxes).astype(np.int32).clip(min=0, max=1023)
                     preds = boxes # outputs[i]['boxes'].data.cpu().numpy()
                     # scores = outputs[i]['scores'].data.cpu().numpy()
                     preds_sorted_idx = np.argsort(scores)[::-1]
