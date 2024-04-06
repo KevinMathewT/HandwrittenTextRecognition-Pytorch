@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision
 
 import timm
-from timm.models.layers.conv2d_same import Conv2dSame
+from timm.layers.conv2d_same import Conv2dSame
 
 from collections import OrderedDict
 
