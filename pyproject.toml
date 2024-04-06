@@ -20,6 +20,8 @@ nbconvert = "7.14.2"
 tqdm = "4.65.2"
 numpy = "1.26.3"
 matplotlib = "*"
+notebook = "^7.1.2"
+wandb = "^0.16.6"
 
 
 [build-system]
