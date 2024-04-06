@@ -6,19 +6,19 @@ authors = ["Kevin Mathew T <mathewtkevin@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-torch = "*"
-pandas = "*"
+python = "3.10"
+torch = "2.1.2"
+pandas = "2.2.0"
 seaborn = "*"
-scipy = "*"
+scipy = "1.13.0"
 timm = "*"
-opencv-python = "*"
+opencv-python = "4.9.0.80"
 numba = "*"
-albumentations = "*"
+albumentations = "1.4.3"
 effdet = "*"
-nbconvert = "*"
-tqdm = "*"
-numpy = "*"
+nbconvert = "7.14.2"
+tqdm = "4.65.2"
+numpy = "1.26.3"
 matplotlib = "*"
 
 
